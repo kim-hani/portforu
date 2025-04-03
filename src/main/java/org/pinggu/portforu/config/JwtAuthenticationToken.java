@@ -1,15 +1,15 @@
 package org.pinggu.portforu.config;
 
-import org.pinggu.portforu.domain.auth.entity.AuthUser;
+import org.pinggu.portforu.common.dto.AuthMember;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
-    private final AuthUser authUser;
+    private final AuthMember authMember;
 
-    public JwtAuthenticationToken(AuthUser authUser) {
-        super(authUser.getAuthorities());
-        this.authUser = authUser;
+    public JwtAuthenticationToken(AuthMember authMember) {
+        super(authMember.getAuthorities());
+        this.authMember = authMember;
         setAuthenticated(true);
     }
 
@@ -20,6 +20,6 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
     @Override
     public Object getPrincipal() {
-        return authUser;
+        return authMember;
     }
 }

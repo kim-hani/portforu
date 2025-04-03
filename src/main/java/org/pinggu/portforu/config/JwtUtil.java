@@ -7,7 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.pinggu.portforu.common.exception.CustomException;
-import org.pinggu.portforu.domain.user.entity.UserRole;
+import org.pinggu.portforu.domain.member.enums.UserRole;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -36,18 +36,18 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    public String createToken(Long userId, String email, UserRole userRole) {
+    public String createToken(Long memberId, String email, UserRole userRole) {
         Date date = new Date();
 
-        if (userId == null) {
-            throw new CustomException(HttpStatus.BAD_REQUEST,"userId는 null일 수 없습니다");
+        if (memberId == null) {
+            throw new CustomException(HttpStatus.BAD_REQUEST,"memberId는 null일 수 없습니다");
         }
 
-        log.info("Creating access token for userId: {}", userId);
+        log.info("Creating access token for memberId: {}", memberId);
 
         return BEARER_PREFIX +
                 Jwts.builder()
-                        .setSubject(String.valueOf(userId))
+                        .setSubject(String.valueOf(memberId))
                         .claim("email", email)
                         .claim("userRole", userRole.getUserRole())
                         .claim("tokenType", "access")
@@ -57,13 +57,13 @@ public class JwtUtil {
                         .compact();
     }
 
-    public String createRefreshToken(Long userId, String email,UserRole userRole) {
+    public String createRefreshToken(Long memberId, String email,UserRole userRole) {
         Date now = new Date();
-        log.info("Creating refresh token for userId: {}", userId);
+        log.info("Creating refresh token for memberId: {}", memberId);
 
         return BEARER_PREFIX +
                 Jwts.builder()
-                        .setSubject(String.valueOf(userId))
+                        .setSubject(String.valueOf(memberId))
                         .claim("email", email)
                         .claim("userRole", userRole.name())
                         .claim("tokenType", "refresh")

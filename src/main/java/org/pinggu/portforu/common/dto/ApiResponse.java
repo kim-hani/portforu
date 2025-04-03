@@ -1,34 +1,35 @@
-package org.pinggu.portforu.common.domain;
+package org.pinggu.portforu.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.pinggu.portforu.common.domain.PageInfo;
 
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class Response<T> {
+public class ApiResponse<T> {
     private T data;
     private PageInfo page;
 
-    private Response(T data) {
+    private ApiResponse(T data) {
         this.data = data;
     }
 
-    private Response(T data, PageInfo page) {
+    private ApiResponse(T data, PageInfo page) {
         this.data = data;
         this.page = page;
     }
 
     // 페이징 적용 X
-    public static <T> Response<T> of(T data) {
-        return new Response<>(data);
+    public static <T> ApiResponse<T> of(T data) {
+        return new ApiResponse<>(data);
     }
 
     // 페이징 적용
-    public static <T> Response<T> of(T data, PageInfo page) {
-        return new Response<>(data, page);
+    public static <T> ApiResponse<T> of(T data, PageInfo page) {
+        return new ApiResponse<>(data, page);
     }
 
 }

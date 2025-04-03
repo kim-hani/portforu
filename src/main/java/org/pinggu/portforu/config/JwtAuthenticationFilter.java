@@ -12,9 +12,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.pinggu.portforu.common.exception.CustomException;
-import org.pinggu.portforu.domain.auth.entity.AuthUser;
-import org.pinggu.portforu.domain.user.entity.UserRole;
+import org.pinggu.portforu.common.dto.AuthMember;
+import org.pinggu.portforu.domain.member.enums.UserRole;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -67,12 +66,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void setAuthentication(Claims claims) {
-        Long userId = Long.valueOf(claims.getSubject());
+        Long memberId = Long.valueOf(claims.getSubject());
         String email = claims.get("email", String.class);
         UserRole userRole = UserRole.of(claims.get("userRole", String.class));
 
-        AuthUser authUser = new AuthUser(userId, email, userRole);
-        JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(authUser);
+        AuthMember authMember = new AuthMember(memberId, email, userRole);
+        JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(authMember);
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
 }

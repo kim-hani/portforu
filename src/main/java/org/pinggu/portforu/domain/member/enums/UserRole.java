@@ -1,4 +1,4 @@
-package org.pinggu.portforu.domain.user.entity;
+package org.pinggu.portforu.domain.member.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
