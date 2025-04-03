@@ -46,14 +46,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     setAuthentication(claims);
                 }
             } catch (SecurityException | MalformedJwtException e) {
-                throw new CustomException(HttpStatus.UNAUTHORIZED, "유효하지 않는 JWT 서명입니다.");
+                log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.", e);
+                httpResponse.sendError(HttpStatus.UNAUTHORIZED.value(), "유효하지 않는 JWT 서명입니다.");
+                return;
             } catch (ExpiredJwtException e) {
-                throw new CustomException(HttpStatus.UNAUTHORIZED, "만료된 JWT 토큰입니다.");
+                log.error("Expired JWT token, 만료된 JWT token 입니다.", e);
+                httpResponse.sendError(HttpStatus.UNAUTHORIZED.value(), "만료된 JWT 토큰입니다.");
+                return;
             } catch (UnsupportedJwtException e) {
-                throw new CustomException(HttpStatus.BAD_REQUEST, "지원되지 않는 JWT 토큰입니다.");
+                log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.", e);
+                httpResponse.sendError(HttpStatus.BAD_REQUEST.value(), "지원되지 않는 JWT 토큰입니다.");
+                return;
             } catch (Exception e) {
                 log.error("Internal server error", e);
-                throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
+                httpResponse.sendError(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                return;
             }
         }
         chain.doFilter(httpRequest, httpResponse);

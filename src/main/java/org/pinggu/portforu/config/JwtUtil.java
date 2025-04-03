@@ -22,7 +22,8 @@ import java.util.Date;
 public class JwtUtil {
 
     private static final String BEARER_PREFIX = "Bearer ";
-    private static final long TOKEN_TIME = 60 * 60 * 1000L;
+    private static final long TOKEN_TIME = 60 * 60 * 1000L;    // 60분
+    private static final long REFRESH_TOKEN_TIME = 7 * 24 * 60 * 60 * 1000L; // 7일
 
     @Value("${jwt.secret.key}")
     private String secretKey;
@@ -38,13 +39,36 @@ public class JwtUtil {
     public String createToken(Long userId, String email, UserRole userRole) {
         Date date = new Date();
 
+        if (userId == null) {
+            throw new CustomException(HttpStatus.BAD_REQUEST,"userId는 null일 수 없습니다");
+        }
+
+        log.info("Creating access token for userId: {}", userId);
+
         return BEARER_PREFIX +
                 Jwts.builder()
                         .setSubject(String.valueOf(userId))
                         .claim("email", email)
                         .claim("userRole", userRole.getUserRole())
+                        .claim("tokenType", "access")
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME))
                         .setIssuedAt(date)
+                        .signWith(key, signatureAlgorithm)
+                        .compact();
+    }
+
+    public String createRefreshToken(Long userId, String email,UserRole userRole) {
+        Date now = new Date();
+        log.info("Creating refresh token for userId: {}", userId);
+
+        return BEARER_PREFIX +
+                Jwts.builder()
+                        .setSubject(String.valueOf(userId))
+                        .claim("email", email)
+                        .claim("userRole", userRole.name())
+                        .claim("tokenType", "refresh")
+                        .setExpiration(new Date(now.getTime() + REFRESH_TOKEN_TIME))
+                        .setIssuedAt(now)
                         .signWith(key, signatureAlgorithm)
                         .compact();
     }
