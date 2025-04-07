@@ -21,6 +21,6 @@ public class PageInfo {
         this.pageSize = pageSize;
         this.totalElement = totalElement;
         this.totalPage = totalPage;
-    }
+    }   
 
 }

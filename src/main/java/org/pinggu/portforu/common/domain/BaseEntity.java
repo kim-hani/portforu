@@ -34,7 +34,5 @@ public class BaseEntity {
         this.deletedAt = null;
     }
 
-    // delete or update시 관행적으로 변경사항이 있는 id값을 넘겨주기도 한답니다.
-    // 논의 후 id값을 반환하는 형태 사용할지 정해보는것도 좋을 것 같습니당.
-
 }
+
