@@ -50,10 +50,16 @@ public class RefreshTokenService {
 
         String newAccessToken = jwtUtil.createToken(member.getId(),
                 member.getEmail(),
+                member.getName(),
+                member.getPhoneNumber(),
+                member.getAddress(),
                 member.getUserRole()
         );
         String newRefreshToken = jwtUtil.createRefreshToken(member.getId(),
                 member.getEmail(),
+                member.getName(),
+                member.getPhoneNumber(),
+                member.getAddress(),
                 member.getUserRole()
         );
         saved.updateToken(newRefreshToken);

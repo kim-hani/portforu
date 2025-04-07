@@ -49,11 +49,17 @@ public class AuthService {
         String accessToken = jwtUtil.createToken(
                 savedMember.getId(),
                 savedMember.getEmail(),
+                savedMember.getName(),
+                savedMember.getPhoneNumber(),
+                savedMember.getAddress(),
                 savedMember.getUserRole()
         );
         String refreshToken = jwtUtil.createRefreshToken(
                 savedMember.getId(),
                 savedMember.getEmail(),
+                savedMember.getName(),
+                savedMember.getPhoneNumber(),
+                savedMember.getAddress(),
                 savedMember.getUserRole()
         );
 
@@ -81,11 +87,17 @@ public class AuthService {
         String accessToken = jwtUtil.createToken(
                 member.getId(),
                 member.getEmail(),
+                member.getName(),
+                member.getPhoneNumber(),
+                member.getAddress(),
                 member.getUserRole()
         );
         String refreshToken = jwtUtil.createRefreshToken(
                 member.getId(),
                 member.getEmail(),
+                member.getName(),
+                member.getPhoneNumber(),
+                member.getAddress(),
                 member.getUserRole()
         );
 

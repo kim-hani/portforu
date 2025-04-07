@@ -1,17 +1,16 @@
 package org.pinggu.portforu.domain.member.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.pinggu.portforu.common.domain.BaseEntity;
+import org.pinggu.portforu.common.dto.AuthMember;
 import org.pinggu.portforu.domain.member.enums.UserRole;
 
 @Getter
 @Entity
 @Table(name = "members")
 @NoArgsConstructor
-@AllArgsConstructor
 public class Member extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,6 +42,19 @@ public class Member extends BaseEntity {
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.userRole = userRole;
+    }
+
+    private Member(Long id, String email, String name, String phoneNumber, String address, UserRole userRole) {
+        this.id = id;
+        this.email = email;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.userRole = userRole;
+    }
+
+    public static Member fromAuthMember(AuthMember authMember) {
+        return new Member(authMember.getId(), authMember.getEmail(), authMember.getName(), authMember.getPhoneNumber(), authMember.getAddress(), authMember.getUserRole());
     }
 
     public void update(String password, String name, String phoneNumber, String address) {
