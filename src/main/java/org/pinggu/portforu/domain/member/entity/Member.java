@@ -1,6 +1,7 @@
 package org.pinggu.portforu.domain.member.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.pinggu.portforu.common.domain.BaseEntity;
@@ -10,6 +11,7 @@ import org.pinggu.portforu.domain.member.enums.UserRole;
 @Entity
 @Table(name = "members")
 @NoArgsConstructor
+@AllArgsConstructor
 public class Member extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,6 +43,13 @@ public class Member extends BaseEntity {
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.userRole = userRole;
+    }
+
+    public void update(String password, String name, String phoneNumber, String address) {
+        if (password != null) this.password = password;
+        if (name != null) this.name = name;
+        if (phoneNumber != null) this.phoneNumber = phoneNumber;
+        if (address != null) this.address = address;
     }
 
 }

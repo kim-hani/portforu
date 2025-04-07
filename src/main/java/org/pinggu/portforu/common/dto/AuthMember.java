@@ -18,7 +18,7 @@ public class AuthMember {
     public AuthMember(Long Id, String email, UserRole userRole) {
         this.Id = Id;
         this.email = email;
-        this.authorities = List.of(new SimpleGrantedAuthority(userRole.name()));
+        this.authorities = List.of(new SimpleGrantedAuthority("ROLE_" + userRole.name()));
     }
 
 }

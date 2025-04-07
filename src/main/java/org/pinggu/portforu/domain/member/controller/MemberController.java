@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.pinggu.portforu.common.dto.ApiResponse;
 import org.pinggu.portforu.common.dto.AuthMember;
+import org.pinggu.portforu.domain.member.dto.request.MemberDeleteRequestDto;
 import org.pinggu.portforu.domain.member.dto.response.MemberResponseDto;
 import org.pinggu.portforu.domain.member.dto.request.MemberUpdateRequestDto;
 import org.pinggu.portforu.domain.member.service.MemberService;
@@ -20,22 +21,28 @@ public class MemberController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<MemberResponseDto>> findMember(@AuthenticationPrincipal AuthMember authMember) {
-        return ResponseEntity.ok().body(memberService.findMember(authMember));
+        if (authMember == null) {
+            throw new IllegalArgumentException("User is not authenticated");
+        }
+
+        return ResponseEntity.ok().body(ApiResponse.of(memberService.findMember(authMember)));
     }
 
     @PutMapping
-    public ResponseEntity<ApiResponse<MemberResponseDto>> updatemember(
+    public ResponseEntity<ApiResponse<MemberResponseDto>> updateMember(
             @AuthenticationPrincipal AuthMember authMember,
             @Valid @RequestBody MemberUpdateRequestDto requestDto
     ) {
-        return ResponseEntity.ok().body(memberService.updateMember(authMember, requestDto));
+        return ResponseEntity.ok().body(ApiResponse.of(memberService.updateMember(authMember, requestDto)));
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deletemember(@AuthenticationPrincipal AuthMember authMember) {
-        memberService.deleteMember(authMember);
+    public ResponseEntity<Void> deleteMember(
+            @AuthenticationPrincipal AuthMember authMember,
+            @Valid @RequestBody MemberDeleteRequestDto requestDto
+            ) {
+        memberService.deleteMember(authMember, requestDto);
         return ResponseEntity.noContent().build();
     }
-
 
 }

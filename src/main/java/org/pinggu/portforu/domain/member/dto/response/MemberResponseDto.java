@@ -21,6 +21,7 @@ public class MemberResponseDto {
                 .email(member.getEmail())
                 .name(member.getName())
                 .phoneNumber(member.getPhoneNumber())
+                .address(member.getAddress())
                 .userRole(member.getUserRole().name())
                 .build();
     }
