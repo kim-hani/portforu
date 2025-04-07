@@ -39,7 +39,11 @@ public class ScrapService {
                     return existingScrap;
                 })
                 .orElseGet(() -> {
-                    Scrap newScrap = new Scrap(member, jobPosting);
+                    Scrap newScrap = Scrap.builder()
+                            .member(member)
+                            .jobPosting(jobPosting)
+                            .build();
+
                     scrapRepository.save(newScrap);
                     return newScrap;
                 });

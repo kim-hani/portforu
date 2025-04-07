@@ -25,8 +25,16 @@ public class JobPostingService {
 
     @Transactional
     public JobPostingResponseDto saveJobPosting(JobPostingSaveRequestDto request) {
-        JobPosting jobPosting = new JobPosting(request.getName(), request.getIndustry(), request.getAddress(), request.getSalary(),
-                request.getQualifications(), request.getPreferential(), request.getPostingDate(), request.getClosingDate());
+        JobPosting jobPosting = JobPosting.builder()
+                .name(request.getName())
+                .industry(request.getIndustry())
+                .address(request.getAddress())
+                .salary(request.getSalary())
+                .qualifications(request.getQualifications())
+                .preferential(request.getPreferential())
+                .postingDate(request.getPostingDate())
+                .closingDate(request.getClosingDate())
+                .build();
 
         jobPostingRepository.save(jobPosting);
 
