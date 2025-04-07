@@ -2,6 +2,7 @@ package org.pinggu.portforu.domain.member.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.pinggu.portforu.common.annotation.Member;
 import org.pinggu.portforu.common.dto.ApiResponse;
 import org.pinggu.portforu.common.dto.AuthMember;
 import org.pinggu.portforu.domain.member.dto.request.MemberDeleteRequestDto;
@@ -21,13 +22,10 @@ public class MemberController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<MemberResponseDto>> findMember(@AuthenticationPrincipal AuthMember authMember) {
-        if (authMember == null) {
-            throw new IllegalArgumentException("User is not authenticated");
-        }
-
         return ResponseEntity.ok().body(ApiResponse.of(memberService.findMember(authMember)));
     }
 
+    @Member
     @PutMapping
     public ResponseEntity<ApiResponse<MemberResponseDto>> updateMember(
             @AuthenticationPrincipal AuthMember authMember,
@@ -36,11 +34,12 @@ public class MemberController {
         return ResponseEntity.ok().body(ApiResponse.of(memberService.updateMember(authMember, requestDto)));
     }
 
+    @Member
     @DeleteMapping
     public ResponseEntity<Void> deleteMember(
             @AuthenticationPrincipal AuthMember authMember,
             @Valid @RequestBody MemberDeleteRequestDto requestDto
-            ) {
+    ) {
         memberService.deleteMember(authMember, requestDto);
         return ResponseEntity.noContent().build();
     }

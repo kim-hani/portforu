@@ -35,14 +35,14 @@ public class AuthService {
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
         UserRole userRole = UserRole.ROLE_USER;
 
-        Member newMember = new Member(
-                requestDto.getEmail(),
-                encodedPassword,
-                requestDto.getName(),
-                requestDto.getPhoneNumber(),
-                requestDto.getAddress(),
-                userRole
-        );
+        Member newMember = Member.builder()
+                .email(requestDto.getEmail())
+                .password(encodedPassword)
+                .name(requestDto.getName())
+                .phoneNumber(requestDto.getPhoneNumber())
+                .address(requestDto.getAddress())
+                .userRole(userRole)
+                .build();
 
         Member savedMember = memberRepository.save(newMember);
 
@@ -63,15 +63,15 @@ public class AuthService {
                 savedMember.getUserRole()
         );
 
-        return new SignupResponseDto(
-                accessToken,
-                savedMember.getId(),
-                savedMember.getEmail(),
-                savedMember.getName(),
-                savedMember.getPhoneNumber(),
-                savedMember.getAddress(),
-                savedMember.getUserRole().name()
-        );
+        return SignupResponseDto.builder()
+                .bearerToken(accessToken)
+                .id(savedMember.getId())
+                .email(savedMember.getEmail())
+                .name(savedMember.getName())
+                .phoneNumber(savedMember.getPhoneNumber())
+                .address(savedMember.getAddress())
+                .userRole(savedMember.getUserRole().name())
+                .build();
     }
 
     @Transactional(readOnly = true)

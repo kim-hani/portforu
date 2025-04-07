@@ -22,13 +22,13 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MemberResponseDto findMember(AuthMember authMember) {
-        Member member = findMemberByAuthMemberId(authMember);
+        Member member = findMemberById(authMember);
         return MemberResponseDto.from(member);
     }
 
     @Transactional
     public MemberResponseDto updateMember(AuthMember authMember, MemberUpdateRequestDto requestDto) {
-        Member member = findMemberByAuthMemberId(authMember);
+        Member member = findMemberById(authMember);
 
         if(!passwordEncoder.matches(requestDto.getOldPassword(), member.getPassword())) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "기존 비밀번호가 일치하지 않습니다.");
@@ -47,7 +47,7 @@ public class MemberService {
 
     @Transactional
     public void deleteMember(AuthMember authMember, MemberDeleteRequestDto requestDto) {
-        Member member = findMemberByAuthMemberId(authMember);
+        Member member = findMemberById(authMember);
 
         if (!passwordEncoder.matches(requestDto.getPassword(), member.getPassword())) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "잘못된 비밀번호입니다.");
@@ -60,7 +60,7 @@ public class MemberService {
         member.delete();
     }
 
-    private Member findMemberByAuthMemberId(AuthMember authMember) {
+    private Member findMemberById(AuthMember authMember) {
         return memberRepository.findById(authMember.getId()).orElseThrow(() ->
                 new CustomException(HttpStatus.NOT_FOUND, "존재하지 않는 회원정보입니다."));
     }

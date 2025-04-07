@@ -52,7 +52,7 @@ public class MemberServiceTest {
     }
 
     private AuthMember authMember() {
-        return new AuthMember(MEMBER_ID, EMAIL, UserRole.ROLE_USER);
+        return new AuthMember(MEMBER_ID, EMAIL, NAME, PHONE, ADDRESS, UserRole.ROLE_USER);
     }
 
     @Nested

@@ -1,6 +1,8 @@
 package org.pinggu.portforu.domain.member.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.pinggu.portforu.common.domain.BaseEntity;
@@ -10,7 +12,7 @@ import org.pinggu.portforu.domain.member.enums.UserRole;
 @Getter
 @Entity
 @Table(name = "members")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,6 +37,7 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
+    @Builder
     public Member(String email, String password, String name, String phoneNumber, String address, UserRole userRole) {
         this.email = email;
         this.password = password;
@@ -53,15 +56,15 @@ public class Member extends BaseEntity {
         this.userRole = userRole;
     }
 
-    public static Member fromAuthMember(AuthMember authMember) {
-        return new Member(authMember.getId(), authMember.getEmail(), authMember.getName(), authMember.getPhoneNumber(), authMember.getAddress(), authMember.getUserRole());
-    }
-
     public void update(String password, String name, String phoneNumber, String address) {
         if (password != null) this.password = password;
         if (name != null) this.name = name;
         if (phoneNumber != null) this.phoneNumber = phoneNumber;
         if (address != null) this.address = address;
+    }
+
+    public static Member fromAuthMember(AuthMember authMember) {
+        return new Member(authMember.getId(), authMember.getEmail(), authMember.getName(), authMember.getPhoneNumber(), authMember.getAddress(), authMember.getUserRole());
     }
 
 }

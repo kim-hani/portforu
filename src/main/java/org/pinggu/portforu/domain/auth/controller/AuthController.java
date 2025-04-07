@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
-    private RefreshTokenService refreshTokenService;
+    private final RefreshTokenService refreshTokenService;
 
 
     @PostMapping("/signup")

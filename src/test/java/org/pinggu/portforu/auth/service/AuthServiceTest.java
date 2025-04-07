@@ -85,7 +85,7 @@ public class AuthServiceTest {
                 ReflectionTestUtils.setField(saved, "id", MEMBER_ID);
                 return saved;
             });
-            given(jwtUtil.createToken(anyLong(), anyString(), any(UserRole.class)))
+            given(jwtUtil.createToken(anyLong(), anyString(), anyString(), anyString(), anyString(), any(UserRole.class)))
                     .willReturn(ACCESS_TOKEN);
 
             // when
@@ -130,8 +130,8 @@ public class AuthServiceTest {
 
             given(memberRepository.findByEmail(EMAIL)).willReturn(Optional.of(member));
             given(passwordEncoder.matches(PASSWORD, ENCODED_PASSWORD)).willReturn(true);
-            given(jwtUtil.createToken(anyLong(), anyString(), any(UserRole.class))).willReturn(ACCESS_TOKEN);
-            given(jwtUtil.createRefreshToken(anyLong(), anyString(), any(UserRole.class))).willReturn(REFRESH_TOKEN);
+            given(jwtUtil.createToken(anyLong(), anyString(), anyString(), anyString(), anyString(), any(UserRole.class))).willReturn(ACCESS_TOKEN);
+            given(jwtUtil.createRefreshToken(anyLong(), anyString(), anyString(), anyString(), anyString(), any(UserRole.class))).willReturn(REFRESH_TOKEN);
             given(refreshTokenRepository.findById(anyLong())).willReturn(Optional.empty());
 
             // when
