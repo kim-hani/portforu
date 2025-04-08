@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
+import java.time.Year;
 
 @Service
 @RequiredArgsConstructor
@@ -35,15 +36,27 @@ public class SubscribeService {
     ) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "해당 회원이 존재하지 않습니다."));
-        Membership membership = membershipRepository.findById(membershipId)
+        Membership membership = membershipRepository.findByIdAndDeletedAtIsNull(membershipId)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "해당 멤버십이 존재하지 않습니다."));
 
+        int currentYear = Year.now().getValue();
+
+        if (membership.getYear() != currentYear) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "해당 멤버십은 " + membership.getYear() + "년 전용입니다.");
+        }
+
+        if (subscribeRepository.existsByMemberIdAndMembershipId(memberId, membershipId)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 구독중인 멤버십입니다.");
+        }
+
         LocalDateTime startDate = LocalDateTime.now();
+        LocalDateTime endDate = LocalDateTime.of(currentYear, 12, 31, 23, 59, 59);
+
         Subscribe subscribe = Subscribe.builder()
                 .member(member)
                 .membership(membership)
                 .startDate(startDate)
-                .endDate(startDate.plusMonths(1))
+                .endDate(endDate)
                 .build();
         Subscribe savedSub = subscribeRepository.save(subscribe);
 
@@ -73,7 +86,7 @@ public class SubscribeService {
 
     @Transactional
     public Long deleteSubscribe(Long memberId, Long subscribeId) {
-        Subscribe subscribe = subscribeRepository.findById(subscribeId)
+        Subscribe subscribe = subscribeRepository.findByIdAndDeletedAtIsNull(subscribeId)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "해당 구독이 존재하지 않습니다."));
 
         if (!subscribe.getMember().getId().equals(memberId)) {
