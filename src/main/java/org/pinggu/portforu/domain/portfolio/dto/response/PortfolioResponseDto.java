@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class PortfolioResponseDto {
-
     private final Long id;
     private final Long memberId;
     private final String title;
@@ -34,5 +33,5 @@ public class PortfolioResponseDto {
                 .deletedAt(portfolio.getDeletedAt())
                 .build();
     }
-}
 
+}

@@ -13,6 +13,9 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public class BaseEntity {
 
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected Long id;
+
     @CreatedDate
     @Column(updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -26,8 +29,9 @@ public class BaseEntity {
     @Column
     private LocalDateTime deletedAt;
 
-    public void delete() {
+    public Long delete() {
         this.deletedAt = LocalDateTime.now();
+        return this.id;
     }
 
     public void restore() {

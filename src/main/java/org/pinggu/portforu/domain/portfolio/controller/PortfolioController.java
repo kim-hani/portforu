@@ -17,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/portfolios")
 @RequiredArgsConstructor
@@ -29,17 +31,15 @@ public class PortfolioController {
     public ResponseEntity<ApiResponse<PortfolioResponseDto>> savePortfolio(
             @AuthenticationPrincipal AuthMember authMember,
             @Valid @RequestBody PortfolioRequestDto requestDto
-    ) {
-        return ResponseEntity.ok().body(ApiResponse.of(
-                portfolioService.savePortfolio(requestDto, authMember.getId())));
+    ){
+        return ResponseEntity.ok(ApiResponse.of(portfolioService.savePortfolio(requestDto,authMember.getId())));
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<?>> findAllPortfolios(
+    public ResponseEntity<ApiResponse<List<PortfolioResponseDto>>> findAllPortfolios(
             @ModelAttribute Pagecond pagecond
     ) {
         Page<PortfolioResponseDto> portfolios = portfolioService.findAllPortfolios(pagecond);
-
         PageInfo pageInfo = PageInfo.builder()
                 .pageNum(pagecond.getPageNum())
                 .pageSize(pagecond.getPageSize())
@@ -49,7 +49,6 @@ public class PortfolioController {
 
         return ResponseEntity.ok().body(ApiResponse.of(portfolios.getContent(), pageInfo));
     }
-
 
     @GetMapping("/{portfolioId}")
     public ResponseEntity<ApiResponse<PortfolioDetailResponseDto>> findPortfolio(
@@ -72,12 +71,12 @@ public class PortfolioController {
 
     @Member
     @DeleteMapping("/{portfolioId}")
-    public ResponseEntity<ApiResponse<Void>> deletePortfolio(
+    public ResponseEntity<ApiResponse<Long>> deletePortfolio(
             @AuthenticationPrincipal AuthMember authMember,
             @PathVariable("portfolioId") Long portfolioId
-    ) {
-        portfolioService.deletePortfolio(portfolioId, authMember.getId());
-        return ResponseEntity.ok(ApiResponse.of(null));
+    ){
+        Long deletePortfolioId = portfolioService.deletePortfolio(portfolioId, authMember.getId());
+        return ResponseEntity.ok(ApiResponse.of(deletePortfolioId));
     }
 }
 

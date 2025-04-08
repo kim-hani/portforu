@@ -23,4 +23,5 @@ public class AdminAccessAspect {
             throw new CustomException(HttpStatus.FORBIDDEN, "관리자 권한이 필요합니다.");
         }
     }
+
 }

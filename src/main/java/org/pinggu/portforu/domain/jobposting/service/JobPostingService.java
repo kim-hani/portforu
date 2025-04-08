@@ -67,10 +67,10 @@ public class JobPostingService {
     }
 
     @Transactional
-    public void deleteJobPosting(Long jobPostingId) {
+    public Long deleteJobPosting(Long jobPostingId) {
         JobPosting jobPosting = findJobPostingById(jobPostingId);
 
-        jobPosting.delete();
+        return jobPosting.delete();
     }
 
     public JobPosting findJobPostingById(Long id) {

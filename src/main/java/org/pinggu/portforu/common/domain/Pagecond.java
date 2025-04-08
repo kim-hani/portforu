@@ -14,4 +14,5 @@ public class Pagecond {
         this.pageNum = pageNum == null ? 1 : pageNum;
         this.pageSize = pageSize == null ? 10 : pageSize;
     }
+
 }

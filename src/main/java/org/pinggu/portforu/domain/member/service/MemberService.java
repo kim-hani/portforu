@@ -23,6 +23,7 @@ public class MemberService {
     @Transactional(readOnly = true)
     public MemberResponseDto findMember(AuthMember authMember) {
         Member member = findMemberById(authMember);
+
         return MemberResponseDto.from(member);
     }
 
@@ -46,7 +47,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void deleteMember(AuthMember authMember, MemberDeleteRequestDto requestDto) {
+    public Long deleteMember(AuthMember authMember, MemberDeleteRequestDto requestDto) {
         Member member = findMemberById(authMember);
 
         if (!passwordEncoder.matches(requestDto.getPassword(), member.getPassword())) {
@@ -57,7 +58,7 @@ public class MemberService {
             throw new CustomException(HttpStatus.BAD_REQUEST, "비밀번호 확인에 실패했습니다.");
         }
 
-        member.delete();
+        return member.delete();
     }
 
     private Member findMemberById(AuthMember authMember) {

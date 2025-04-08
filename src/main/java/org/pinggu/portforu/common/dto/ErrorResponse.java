@@ -1,17 +1,32 @@
 package org.pinggu.portforu.common.dto;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 
 @Getter
-@RequiredArgsConstructor
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ErrorResponse {
 
-    private final String status;
-    private final int code;
-    private final String message;
-    private final LocalDateTime timestamp;
+    private String status;
+    private int code;
+    private String message;
+    private LocalDateTime timestamp;
+
+    public static ResponseEntity<ErrorResponse> toResponseEntity(HttpStatus status, String message) {
+        return new ResponseEntity<>(
+                ErrorResponse.builder()
+                        .status(status.name())
+                        .code(status.value())
+                        .message(message)
+                        .timestamp(LocalDateTime.now())
+                        .build(),
+                status
+        );
+    }
 
 }

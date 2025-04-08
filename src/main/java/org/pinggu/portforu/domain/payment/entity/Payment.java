@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.pinggu.portforu.domain.payment.enums.PaymentMethod;
+import org.pinggu.portforu.domain.payment.enums.PaymentStatus;
 import org.pinggu.portforu.domain.subscribe.entity.Subscribe;
 
 @Getter
@@ -27,18 +29,11 @@ public class Payment {
     private Subscribe subscribe;
 
     @Builder
-    public Payment(PaymentMethod paymentMethod,PaymentStatus status,Subscribe subscribe) {
+    public Payment(PaymentMethod paymentMethod, PaymentStatus status, Subscribe subscribe) {
         this.paymentMethod = paymentMethod;
         this.status = status;
         this.subscribe = subscribe;
     }
 
-    public enum PaymentMethod {
-        CREDIT_CARD, DEBIT_CARD, PAYPAL, OTHER
-    }
-
-    public enum PaymentStatus {
-        PENDING, COMPLETED, FAILED
-    }
 }
 

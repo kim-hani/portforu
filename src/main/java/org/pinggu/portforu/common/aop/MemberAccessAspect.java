@@ -23,4 +23,5 @@ public class MemberAccessAspect {
             throw new CustomException(HttpStatus.FORBIDDEN, "일반 사용자 권한이 필요합니다.");
         }
     }
+
 }

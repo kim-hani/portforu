@@ -27,7 +27,6 @@ public class Portfolio extends BaseEntity {
     @Column(nullable = false)
     private Integer views;
 
-
     @Builder
     public Portfolio(Member member, String title, String description, String fileUrl, Integer views) {
         this.member = member;

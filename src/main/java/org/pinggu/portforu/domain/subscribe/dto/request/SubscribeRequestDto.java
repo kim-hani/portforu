@@ -1,13 +1,15 @@
 package org.pinggu.portforu.domain.subscribe.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import org.pinggu.portforu.domain.payment.entity.Payment;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
+import org.pinggu.portforu.domain.payment.enums.PaymentMethod;
 
 @Getter
-@Builder
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SubscribeRequestDto {
-    private final Payment.PaymentMethod paymentMethod; // 결제 수단
+
+    @NotNull(message = "결제 수단을 입력하세요.")
+    private PaymentMethod paymentMethod;
+
 }

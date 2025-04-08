@@ -2,11 +2,14 @@ package org.pinggu.portforu.domain.member.dto.request;
 
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class MemberUpdateRequestDto {
 
     private String oldPassword;
@@ -25,13 +28,5 @@ public class MemberUpdateRequestDto {
 
     @Size(max = 255, message = "255글자 이내로 입력하세요.")
     private String address;
-
-    public MemberUpdateRequestDto(String oldPassword, String newPassword, String name, String phoneNumber, String address) {
-        this.oldPassword = oldPassword;
-        this.newPassword = newPassword;
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.address = address;
-    }
 
 }

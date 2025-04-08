@@ -44,6 +44,7 @@ public class PortfolioService {
                 .build();
 
         Portfolio savedPortfolio = portfolioRepository.save(portfolio);
+
         return PortfolioResponseDto.from(savedPortfolio);
     }
 
@@ -51,7 +52,8 @@ public class PortfolioService {
     public Page<PortfolioResponseDto> findAllPortfolios(Pagecond pagecond) {
         PageRequest pageRequest = PageRequest.of(pagecond.getPageNum() - 1, pagecond.getPageSize());
         Page<Portfolio> portfolios = portfolioRepository.findAllByDeletedAtIsNull(pageRequest);
-        return portfolios.map(PortfolioResponseDto::from);
+        
+      return portfolios.map(PortfolioResponseDto::from);
     }
 
 
@@ -78,6 +80,7 @@ public class PortfolioService {
 
         portfolio.update(updateDto.getTitle(), updateDto.getDescription(), updateDto.getFileUrl());
         Portfolio updatedPortfolio = portfolioRepository.save(portfolio);
+
         return PortfolioResponseDto.from(updatedPortfolio);
     }
 
@@ -89,9 +92,8 @@ public class PortfolioService {
         if (!portfolio.getMember().getId().equals(memberId)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED, "수정 권한이 없습니다.");
         }
-
-        portfolio.delete();
-        portfolioRepository.save(portfolio);
+      
+        return portfolio.delete();
     }
-}
 
+}

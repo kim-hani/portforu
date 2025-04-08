@@ -21,7 +21,9 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<MemberResponseDto>> findMember(@AuthenticationPrincipal AuthMember authMember) {
+    public ResponseEntity<ApiResponse<MemberResponseDto>> findMember(
+            @AuthenticationPrincipal AuthMember authMember
+    ) {
         return ResponseEntity.ok().body(ApiResponse.of(memberService.findMember(authMember)));
     }
 
@@ -36,12 +38,13 @@ public class MemberController {
 
     @Member
     @DeleteMapping
-    public ResponseEntity<Void> deleteMember(
+    public ResponseEntity<ApiResponse<Long>> deleteMember(
             @AuthenticationPrincipal AuthMember authMember,
             @Valid @RequestBody MemberDeleteRequestDto requestDto
     ) {
-        memberService.deleteMember(authMember, requestDto);
-        return ResponseEntity.noContent().build();
+        Long deletedMemberId = memberService.deleteMember(authMember, requestDto);
+
+        return ResponseEntity.ok(ApiResponse.of(deletedMemberId));
     }
 
 }

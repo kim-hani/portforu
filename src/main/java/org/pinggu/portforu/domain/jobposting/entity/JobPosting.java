@@ -13,9 +13,6 @@ import org.pinggu.portforu.common.domain.BaseEntity;
 @Table(name = "job_postings")
 public class JobPosting extends BaseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     private String name;
 
     private String industry;

@@ -20,20 +20,24 @@ public class AuthController {
     private final AuthService authService;
     private final RefreshTokenService refreshTokenService;
 
-
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<SignupResponseDto>> signup(@Valid @RequestBody SignupRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<SignupResponseDto>> signup(
+            @Valid @RequestBody SignupRequestDto requestDto
+    ) {
         return ResponseEntity.ok().body(ApiResponse.of(authService.signup(requestDto)));
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<ApiResponse<SigninResponseDto>> signin(@Valid @RequestBody SigninRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<SigninResponseDto>> signin(
+            @Valid @RequestBody SigninRequestDto requestDto
+    ) {
         return ResponseEntity.ok().body(ApiResponse.of(authService.signin(requestDto)));
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<SigninResponseDto> refreshToken(
-            @RequestHeader("Authorization") String bearerToken) {
+            @RequestHeader("Authorization") String bearerToken
+    ) {
         return ResponseEntity.ok(refreshTokenService.refreshToken(bearerToken));
     }
 

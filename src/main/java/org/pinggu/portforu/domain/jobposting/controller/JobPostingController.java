@@ -23,7 +23,6 @@ public class JobPostingController {
 
     private final JobPostingService jobPostingService;
 
-    // scrap 기능 테스트 하기 위해 작성
     @Admin
     @PostMapping
     public ResponseEntity<ApiResponse<JobPostingResponseDto>> saveJobPosting(
@@ -65,12 +64,12 @@ public class JobPostingController {
 
     @Admin
     @DeleteMapping("/{jobPostingId}")
-    public ResponseEntity<ApiResponse<Void>> deleteJobPosting(
+    public ResponseEntity<ApiResponse<Long>> deleteJobPosting(
             @PathVariable("jobPostingId") Long jobPostingId
     ) {
-        jobPostingService.deleteJobPosting(jobPostingId);
+        Long deletedJobPostingId = jobPostingService.deleteJobPosting(jobPostingId);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponse.of(deletedJobPostingId));
     }
 
 }

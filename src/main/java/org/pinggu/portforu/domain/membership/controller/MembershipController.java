@@ -27,8 +27,7 @@ public class MembershipController {
     public ResponseEntity<ApiResponse<MembershipResponseDto>> saveMembership(
             @Valid @RequestBody MembershipSaveRequestDto request
     ) {
-        MembershipResponseDto response = membershipService.saveMembership(request);
-        return ResponseEntity.ok().body(ApiResponse.of(response));
+        return ResponseEntity.ok().body(ApiResponse.of(membershipService.saveMembership(request)));
     }
 
     @GetMapping
@@ -42,33 +41,34 @@ public class MembershipController {
                 .totalElement(responses.getTotalElements())
                 .totalPage(responses.getTotalPages())
                 .build();
+
         return ResponseEntity.ok().body(ApiResponse.of(responses.getContent(), pageInfo));
     }
 
     @GetMapping("/{membershipId}")
     public ResponseEntity<ApiResponse<MembershipResponseDto>> findMembershipById(
-            @PathVariable Long membershipId
+            @PathVariable("membershipId") Long membershipId
     ) {
-        MembershipResponseDto response = membershipService.findMembershipById(membershipId);
-        return ResponseEntity.ok().body(ApiResponse.of(response));
+        return ResponseEntity.ok().body(ApiResponse.of(membershipService.findMembershipById(membershipId)));
     }
 
     @Admin
     @PutMapping("/{membershipId}")
     public ResponseEntity<ApiResponse<MembershipResponseDto>> updateMembership(
-            @PathVariable Long membershipId,
+            @PathVariable("membershipId") Long membershipId,
             @Valid @RequestBody MembershipUpdateRequestDto request
     ) {
-        MembershipResponseDto updatedMembership = membershipService.updateMembership(membershipId, request);
-        return ResponseEntity.ok(ApiResponse.of(updatedMembership));
+        return ResponseEntity.ok(ApiResponse.of(membershipService.updateMembership(membershipId, request)));
     }
 
     @Admin
     @DeleteMapping("/{membershipId}")
-    public ResponseEntity<ApiResponse<MembershipResponseDto>> deleteMembership(
-            @PathVariable Long membershipId
+    public ResponseEntity<ApiResponse<Long>> deleteMembership(
+            @PathVariable("membershipId") Long membershipId
     ) {
-        MembershipResponseDto response = membershipService.deleteMembership(membershipId);
-        return ResponseEntity.ok().body(ApiResponse.of(response));
+        Long deletedMembershipId = membershipService.deleteMembership(membershipId);
+
+        return ResponseEntity.ok().body(ApiResponse.of(deletedMembershipId));
     }
+
 }
