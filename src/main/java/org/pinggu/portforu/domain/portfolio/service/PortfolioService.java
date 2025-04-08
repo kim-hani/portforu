@@ -85,7 +85,7 @@ public class PortfolioService {
     }
 
     @Transactional
-    public void deletePortfolio(Long portfolioId, Long memberId) {
+    public Long deletePortfolio(Long portfolioId, Long memberId) {
         Portfolio portfolio = portfolioRepository.findByIdAndDeletedAtIsNull(portfolioId)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "게시물을 찾을 수 없습니다."));
 
