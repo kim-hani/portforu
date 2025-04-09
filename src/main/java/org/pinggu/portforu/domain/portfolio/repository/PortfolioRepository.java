@@ -11,8 +11,7 @@ import java.util.Optional;
 @Repository
 public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
 
-    Optional<Portfolio> findByIdAndDeletedAtIsNull(Long id);
-
+    Optional<Portfolio> findById(Long id);
 
     Page<Portfolio> findAllByDeletedAtIsNull(Pageable pageable);
 }

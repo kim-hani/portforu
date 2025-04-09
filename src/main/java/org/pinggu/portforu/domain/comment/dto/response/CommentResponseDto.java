@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.pinggu.portforu.domain.comment.entity.Comment;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 @Builder
@@ -13,9 +13,9 @@ public class CommentResponseDto {
     private final Long memberId;
     private final Long portfolioId;
     private final String content;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
-    private final LocalDateTime deletedAt;
+    private final Instant createdAt;
+    private final Instant updatedAt;
+    private final Instant deletedAt;
 
     public static CommentResponseDto from(Comment comment) {
         return CommentResponseDto.builder()

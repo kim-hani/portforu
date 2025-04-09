@@ -13,7 +13,7 @@ import org.pinggu.portforu.common.domain.BaseEntity;
 @Table(name = "memberships")
 public class Membership extends BaseEntity {
 
-    @Column(nullable = false)
+    @Column(length = 50, nullable = false)
     private String name;
 
     @Column(nullable = false)

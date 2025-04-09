@@ -18,7 +18,7 @@ public class Portfolio extends BaseEntity {
     @Column(nullable = false,length = 50)
     private String title;
 
-    @Lob
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
 
     @Column(length = 500)

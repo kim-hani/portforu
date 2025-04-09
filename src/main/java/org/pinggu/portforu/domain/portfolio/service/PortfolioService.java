@@ -3,13 +3,10 @@ package org.pinggu.portforu.domain.portfolio.service;
 import lombok.RequiredArgsConstructor;
 import org.pinggu.portforu.common.domain.Pagecond;
 import org.pinggu.portforu.common.exception.CustomException;
-import org.pinggu.portforu.domain.comment.dto.response.CommentResponseDto;
-import org.pinggu.portforu.domain.comment.service.CommentService;
 import org.pinggu.portforu.domain.member.entity.Member;
 import org.pinggu.portforu.domain.member.repository.MemberRepository;
 import org.pinggu.portforu.domain.portfolio.dto.request.PortfolioRequestDto;
 import org.pinggu.portforu.domain.portfolio.dto.request.PortfolioUpdateRequestDto;
-import org.pinggu.portforu.domain.portfolio.dto.response.PortfolioDetailResponseDto;
 import org.pinggu.portforu.domain.portfolio.dto.response.PortfolioResponseDto;
 import org.pinggu.portforu.domain.portfolio.entity.Portfolio;
 import org.pinggu.portforu.domain.portfolio.repository.PortfolioRepository;
@@ -19,16 +16,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
-
 @Service
 @RequiredArgsConstructor
 public class PortfolioService {
 
     private final PortfolioRepository portfolioRepository;
     private final MemberRepository memberRepository;
-    private final CommentService commentService;
 
     @Transactional
     public PortfolioResponseDto savePortfolio(PortfolioRequestDto request, Long memberId) {
@@ -51,48 +44,55 @@ public class PortfolioService {
     @Transactional(readOnly = true)
     public Page<PortfolioResponseDto> findAllPortfolios(Pagecond pagecond) {
         PageRequest pageRequest = PageRequest.of(pagecond.getPageNum() - 1, pagecond.getPageSize());
-        Page<Portfolio> portfolios = portfolioRepository.findAllByDeletedAtIsNull(pageRequest);
-        
-      return portfolios.map(PortfolioResponseDto::from);
+
+        Page<Portfolio> portfolioPage = portfolioRepository.findAllByDeletedAtIsNull(pageRequest);
+        return portfolioPage.map(PortfolioResponseDto::from);
     }
 
 
     @Transactional
-    public PortfolioDetailResponseDto findPortfolio(Long portfolioId) {
-        Portfolio portfolio = portfolioRepository.findByIdAndDeletedAtIsNull(portfolioId)
+    public PortfolioResponseDto findPortfolio(Long portfolioId) {
+        Portfolio portfolio = portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "게시물을 찾을 수 없습니다."));
 
+        if (portfolio.isDeleted()) {
+            throw new CustomException(HttpStatus.NOT_FOUND, "삭제된 게시물입니다.");
+        }
         portfolio.incrementViews();
-        portfolioRepository.save(portfolio);
 
-        List<CommentResponseDto> comments = commentService.findAllComments(portfolio.getId());
-        return PortfolioDetailResponseDto.from(portfolio, comments);
+        return PortfolioResponseDto.from(portfolio);
     }
 
     @Transactional
     public PortfolioResponseDto updatePortfolio(Long portfolioId, PortfolioUpdateRequestDto updateDto, Long memberId) {
-        Portfolio portfolio = portfolioRepository.findByIdAndDeletedAtIsNull(portfolioId)
+        Portfolio portfolio = portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "게시물을 찾을 수 없습니다."));
+
+        if (portfolio.isDeleted()) {
+            throw new CustomException(HttpStatus.NOT_FOUND, "삭제된 게시물입니다.");
+        }
 
         if (!portfolio.getMember().getId().equals(memberId)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED, "수정 권한이 없습니다.");
         }
 
         portfolio.update(updateDto.getTitle(), updateDto.getDescription(), updateDto.getFileUrl());
-        Portfolio updatedPortfolio = portfolioRepository.save(portfolio);
-
-        return PortfolioResponseDto.from(updatedPortfolio);
+        return PortfolioResponseDto.from(portfolio);
     }
 
     @Transactional
     public Long deletePortfolio(Long portfolioId, Long memberId) {
-        Portfolio portfolio = portfolioRepository.findByIdAndDeletedAtIsNull(portfolioId)
+        Portfolio portfolio = portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "게시물을 찾을 수 없습니다."));
+
+        if (portfolio.isDeleted()) {
+            throw new CustomException(HttpStatus.NOT_FOUND, "이미 삭제된 게시물입니다.");
+        }
 
         if (!portfolio.getMember().getId().equals(memberId)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED, "수정 권한이 없습니다.");
         }
-      
+
         return portfolio.delete();
     }
 

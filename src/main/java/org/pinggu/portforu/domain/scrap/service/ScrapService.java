@@ -3,6 +3,7 @@ package org.pinggu.portforu.domain.scrap.service;
 import lombok.RequiredArgsConstructor;
 import org.pinggu.portforu.common.domain.Pagecond;
 import org.pinggu.portforu.common.dto.AuthMember;
+import org.pinggu.portforu.common.exception.CustomException;
 import org.pinggu.portforu.domain.jobposting.entity.JobPosting;
 import org.pinggu.portforu.domain.jobposting.service.JobPostingService;
 import org.pinggu.portforu.domain.scrap.dto.response.ScrapDetailResponseDto;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,11 +54,15 @@ public class ScrapService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ScrapDetailResponseDto> findScraps(AuthMember authMember, Pagecond pagecond) {
+    public Page<ScrapDetailResponseDto> findScraps(AuthMember authMember, Long memberId, Pagecond pagecond) {
         Member member = Member.fromAuthMember(authMember);
 
+        if (!memberId.equals(member.getId())) {
+            throw new CustomException(HttpStatus.FORBIDDEN, "다른 회원의 스크랩 목록에 접근할 수 없습니다.");
+        }
+
         Pageable pageable = PageRequest.of(pagecond.getPageNum() - 1, pagecond.getPageSize(), Sort.by(Sort.Order.desc("updatedAt")));
-        Page<Scrap> scraps = scrapRepository.findAllByMemberIdAndDeletedAtIsNull(member.getId(), pageable);
+        Page<Scrap> scraps = scrapRepository.findAllByMemberIdAndDeletedAtIsNull(memberId, pageable);
 
         return scraps.map(ScrapDetailResponseDto::from);
     }

@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.pinggu.portforu.domain.scrap.entity.Scrap;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 @Builder
@@ -18,8 +18,8 @@ public class ScrapDetailResponseDto {
     private final String salary;
     private final String postingDate;
     private final String closingDate;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime deletedAt;
+    private final Instant createdAt;
+    private final Instant deletedAt;
 
     public static ScrapDetailResponseDto from(Scrap scrap) {
         return ScrapDetailResponseDto.builder()

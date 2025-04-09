@@ -9,7 +9,6 @@ import org.pinggu.portforu.common.dto.ApiResponse;
 import org.pinggu.portforu.common.dto.AuthMember;
 import org.pinggu.portforu.domain.portfolio.dto.request.PortfolioRequestDto;
 import org.pinggu.portforu.domain.portfolio.dto.request.PortfolioUpdateRequestDto;
-import org.pinggu.portforu.domain.portfolio.dto.response.PortfolioDetailResponseDto;
 import org.pinggu.portforu.domain.portfolio.dto.response.PortfolioResponseDto;
 import org.pinggu.portforu.domain.portfolio.service.PortfolioService;
 import org.springframework.data.domain.Page;
@@ -51,7 +50,7 @@ public class PortfolioController {
     }
 
     @GetMapping("/{portfolioId}")
-    public ResponseEntity<ApiResponse<PortfolioDetailResponseDto>> findPortfolio(
+    public ResponseEntity<ApiResponse<PortfolioResponseDto>> findPortfolio(
             @PathVariable("portfolioId") Long portfolioId
     ) {
         return ResponseEntity.ok().body(ApiResponse.of(

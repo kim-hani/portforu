@@ -12,15 +12,24 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-public class MemberAccessAspect {
+public class RoleAccessAspect {
+
+    @Before("@annotation(org.pinggu.portforu.common.annotation.Admin)")
+    public void checkAdminAccess(JoinPoint joinPoint) {
+        checkRole(UserRole.ROLE_ADMIN, "관리자 권한이 필요합니다.");
+    }
 
     @Before("@annotation(org.pinggu.portforu.common.annotation.Member)")
-    public void memberApiAccess(JoinPoint joinPoint) {
+    public void checkMemberAccess(JoinPoint joinPoint) {
+        checkRole(UserRole.ROLE_USER, "일반 사용자 권한이 필요합니다.");
+    }
+
+    private void checkRole(UserRole requiredRole, String errorMessage) {
         AuthMember authMember = (AuthMember) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         UserRole role = authMember.getUserRole();
 
-        if (role != UserRole.ROLE_USER) {
-            throw new CustomException(HttpStatus.FORBIDDEN, "일반 사용자 권한이 필요합니다.");
+        if (role != requiredRole) {
+            throw new CustomException(HttpStatus.FORBIDDEN, errorMessage);
         }
     }
 

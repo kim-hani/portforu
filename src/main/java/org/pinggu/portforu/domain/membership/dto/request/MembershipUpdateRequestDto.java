@@ -2,14 +2,11 @@ package org.pinggu.portforu.domain.membership.dto.request;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MembershipUpdateRequestDto {
 
     @Size(max = 50, message = "50글자 이내로 입력하세요.")

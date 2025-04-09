@@ -3,10 +3,10 @@ package org.pinggu.portforu.domain.auth.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.pinggu.portforu.common.dto.ApiResponse;
-import org.pinggu.portforu.domain.auth.dto.response.SigninResponseDto;
-import org.pinggu.portforu.domain.auth.dto.response.SignupResponseDto;
-import org.pinggu.portforu.domain.auth.dto.request.SigninRequestDto;
-import org.pinggu.portforu.domain.auth.dto.request.SignupRequestDto;
+import org.pinggu.portforu.domain.auth.dto.response.SignInResponseDto;
+import org.pinggu.portforu.domain.auth.dto.response.SignUpResponseDto;
+import org.pinggu.portforu.domain.auth.dto.request.SignInRequestDto;
+import org.pinggu.portforu.domain.auth.dto.request.SignUpRequestDto;
 import org.pinggu.portforu.domain.auth.service.AuthService;
 import org.pinggu.portforu.domain.auth.service.RefreshTokenService;
 import org.springframework.http.ResponseEntity;
@@ -21,21 +21,21 @@ public class AuthController {
     private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<SignupResponseDto>> signup(
-            @Valid @RequestBody SignupRequestDto requestDto
+    public ResponseEntity<ApiResponse<SignUpResponseDto>> signUp(
+            @Valid @RequestBody SignUpRequestDto requestDto
     ) {
-        return ResponseEntity.ok().body(ApiResponse.of(authService.signup(requestDto)));
+        return ResponseEntity.ok().body(ApiResponse.of(authService.signUp(requestDto)));
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<ApiResponse<SigninResponseDto>> signin(
-            @Valid @RequestBody SigninRequestDto requestDto
+    public ResponseEntity<ApiResponse<SignInResponseDto>> signIn(
+            @Valid @RequestBody SignInRequestDto requestDto
     ) {
-        return ResponseEntity.ok().body(ApiResponse.of(authService.signin(requestDto)));
+        return ResponseEntity.ok().body(ApiResponse.of(authService.signIn(requestDto)));
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<SigninResponseDto> refreshToken(
+    public ResponseEntity<SignInResponseDto> refreshToken(
             @RequestHeader("Authorization") String bearerToken
     ) {
         return ResponseEntity.ok(refreshTokenService.refreshToken(bearerToken));

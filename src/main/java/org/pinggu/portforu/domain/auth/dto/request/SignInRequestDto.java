@@ -2,15 +2,12 @@ package org.pinggu.portforu.domain.auth.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SigninRequestDto {
+public class SignInRequestDto {
 
     @NotBlank(message = "이메일을 입력하세요.")
     @Email(message = "이메일 형식이 아닙니다.")

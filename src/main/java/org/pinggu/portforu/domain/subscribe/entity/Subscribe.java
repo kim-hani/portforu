@@ -8,7 +8,7 @@ import org.pinggu.portforu.common.domain.BaseEntity;
 import org.pinggu.portforu.domain.member.entity.Member;
 import org.pinggu.portforu.domain.membership.entity.Membership;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 @NoArgsConstructor
@@ -25,20 +25,20 @@ public class Subscribe extends BaseEntity {
     private Membership membership;
 
     @Column(nullable = false)
-    private LocalDateTime startDate;
+    private Instant startDate;
 
     @Column(nullable = false)
-    private LocalDateTime endDate;
+    private Instant endDate;
 
     @Builder
-    public Subscribe(Member member, Membership membership, LocalDateTime startDate, LocalDateTime endDate) {
+    public Subscribe(Member member, Membership membership, Instant startDate, Instant endDate) {
         this.member = member;
         this.membership = membership;
         this.startDate = startDate;
         this.endDate = endDate;
     }
 
-    public Subscribe update(Membership membership, LocalDateTime startDate, LocalDateTime endDate) {
+    public Subscribe update(Membership membership, Instant startDate, Instant endDate) {
         return Subscribe.builder()
                 .member(this.member)
                 .membership(membership)
@@ -48,7 +48,7 @@ public class Subscribe extends BaseEntity {
     }
 
     public boolean isActive() {
-        return LocalDateTime.now().isBefore(this.endDate);
+        return Instant.now().isBefore(this.endDate);
     }
 
 }

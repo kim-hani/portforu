@@ -1,14 +1,11 @@
 package org.pinggu.portforu.domain.membership.dto.request;
 
 import jakarta.validation.constraints.*;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MembershipSaveRequestDto {
 
     @NotNull(message = "멤버쉽 이름은 필수입니다.")

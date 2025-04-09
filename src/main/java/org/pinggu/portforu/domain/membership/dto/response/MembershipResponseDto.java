@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.pinggu.portforu.domain.membership.entity.Membership;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 @Builder
@@ -14,9 +14,9 @@ public class MembershipResponseDto {
     private final Integer price;
     private final Integer quantity;
     private final Integer year;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
-    private final LocalDateTime deletedAt;
+    private final Instant createdAt;
+    private final Instant updatedAt;
+    private final Instant deletedAt;
 
     public static MembershipResponseDto from(Membership membership) {
         return MembershipResponseDto.builder()

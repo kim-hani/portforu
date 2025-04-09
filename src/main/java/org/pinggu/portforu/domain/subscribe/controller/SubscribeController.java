@@ -27,7 +27,7 @@ public class SubscribeController {
     private final SubscribeService subscribeService;
 
     @Member
-    @PostMapping("/memberships/{membershipId}")
+    @PostMapping("/{membershipId}")
     public ResponseEntity<ApiResponse<SubscribeResponseDto>> saveSubscribe(
             @PathVariable("membershipId") Long membershipId,
             @Valid @RequestBody SubscribeRequestDto requestDto,
@@ -39,14 +39,16 @@ public class SubscribeController {
     }
 
     @Member
-    @GetMapping("/my")
+    @GetMapping("/{memberId}")
     public ResponseEntity<ApiResponse<List<SubscribeResponseDto>>> findSubscribes(
             @ModelAttribute Pagecond pagecond,
             @AuthenticationPrincipal AuthMember member
     ) {
         Long memberId = member.getId();
         Pageable pageable = PageRequest.of(pagecond.getPageNum() - 1, pagecond.getPageSize());
+
         Page<SubscribeResponseDto> responses = subscribeService.findSubscribes(memberId, pageable);
+
         PageInfo pageInfo = PageInfo.builder()
                 .pageNum(pagecond.getPageNum())
                 .pageSize(pagecond.getPageSize())
@@ -58,7 +60,7 @@ public class SubscribeController {
     }
 
     @Member
-    @DeleteMapping("/my/{subscribeId}")
+    @DeleteMapping("/{subscribeId}/{memberId}")
     public ResponseEntity<ApiResponse<Long>> deleteSubscribe(
             @PathVariable("subscribeId") Long subscribeId,
             @AuthenticationPrincipal AuthMember member

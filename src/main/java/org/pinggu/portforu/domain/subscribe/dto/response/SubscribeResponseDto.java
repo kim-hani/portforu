@@ -5,7 +5,7 @@ import lombok.Getter;
 import org.pinggu.portforu.domain.payment.entity.Payment;
 import org.pinggu.portforu.domain.subscribe.entity.Subscribe;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 @Builder
@@ -15,8 +15,8 @@ public class SubscribeResponseDto {
     private final Long membershipId;
     private final String paymentMethod;
     private final Long paymentId;
-    private final LocalDateTime startDate;
-    private final LocalDateTime endDate;
+    private final Instant startDate;
+    private final Instant endDate;
     private final boolean active;
 
     public static SubscribeResponseDto from(Subscribe subscribe, Payment payment) {
@@ -31,5 +31,4 @@ public class SubscribeResponseDto {
                 .active(subscribe.isActive())
                 .build();
     }
-
 }

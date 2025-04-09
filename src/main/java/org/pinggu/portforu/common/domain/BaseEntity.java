@@ -6,7 +6,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 @MappedSuperclass
@@ -18,19 +18,21 @@ public class BaseEntity {
 
     @CreatedDate
     @Column(updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @LastModifiedDate
     @Column
-    @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 
     @Column
-    private LocalDateTime deletedAt;
+    private Instant deletedAt;
+
+    public boolean isDeleted() {
+        return deletedAt != null;
+    }
 
     public Long delete() {
-        this.deletedAt = LocalDateTime.now();
+        this.deletedAt = Instant.now();
         return this.id;
     }
 

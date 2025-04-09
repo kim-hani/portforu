@@ -6,7 +6,7 @@ import org.pinggu.portforu.domain.member.entity.Member;
 
 @Getter
 @Builder
-public class SignupResponseDto {
+public class SignUpResponseDto {
 
     private final String bearerToken;
 
@@ -17,8 +17,8 @@ public class SignupResponseDto {
     private final String address;
     private final String userRole;
 
-    public static SignupResponseDto from(Member member, String bearerToken) {
-        return SignupResponseDto.builder()
+    public static SignUpResponseDto from(Member member, String bearerToken) {
+        return SignUpResponseDto.builder()
                 .bearerToken(bearerToken)
                 .id(member.getId())
                 .email(member.getEmail())

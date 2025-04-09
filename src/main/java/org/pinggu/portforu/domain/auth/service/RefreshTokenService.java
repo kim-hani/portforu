@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.pinggu.portforu.common.domain.RefreshToken;
 import org.pinggu.portforu.common.exception.CustomException;
 import org.pinggu.portforu.config.JwtUtil;
-import org.pinggu.portforu.domain.auth.dto.response.SigninResponseDto;
+import org.pinggu.portforu.domain.auth.dto.response.SignInResponseDto;
 import org.pinggu.portforu.domain.auth.repository.RefreshTokenRepository;
 import org.pinggu.portforu.domain.member.entity.Member;
 import org.pinggu.portforu.domain.member.repository.MemberRepository;
@@ -21,7 +21,7 @@ public class RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final MemberRepository memberRepository;
 
-    public SigninResponseDto refreshToken(String bearerToken) {
+    public SignInResponseDto refreshToken(String bearerToken) {
         String token = jwtUtil.substringToken(bearerToken);
         Claims claims;
 
@@ -64,7 +64,7 @@ public class RefreshTokenService {
         );
         saved.updateToken(newRefreshToken);
 
-        return new SigninResponseDto(newAccessToken, newRefreshToken);
+        return new SignInResponseDto(newAccessToken, newRefreshToken);
     }
 
 }

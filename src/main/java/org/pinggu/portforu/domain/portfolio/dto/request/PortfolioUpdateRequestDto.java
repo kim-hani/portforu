@@ -1,14 +1,11 @@
 package org.pinggu.portforu.domain.portfolio.dto.request;
 
 import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PortfolioUpdateRequestDto {
 
     @Size(max = 50, message = "제목은 50자까지 입력 가능합니다.")

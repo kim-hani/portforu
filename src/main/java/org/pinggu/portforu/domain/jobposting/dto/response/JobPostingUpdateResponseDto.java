@@ -4,7 +4,8 @@ import lombok.Builder;
 import lombok.Getter;
 import org.pinggu.portforu.domain.jobposting.entity.JobPosting;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+
 
 @Getter
 @Builder
@@ -19,9 +20,9 @@ public class JobPostingUpdateResponseDto {
     private final String preferential;
     private final String postingDate;
     private final String closingDate;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
-    private final LocalDateTime deletedAt;
+    private final Instant createdAt;
+    private final Instant updatedAt;
+    private final Instant deletedAt;
 
     public static JobPostingUpdateResponseDto from(JobPosting jobPosting) {
         return JobPostingUpdateResponseDto.builder()
@@ -35,7 +36,7 @@ public class JobPostingUpdateResponseDto {
                 .postingDate(jobPosting.getPostingDate())
                 .closingDate(jobPosting.getClosingDate())
                 .createdAt(jobPosting.getCreatedAt())
-                .updatedAt(LocalDateTime.now())
+                .updatedAt(Instant.now())
                 .deletedAt(jobPosting.getDeletedAt())
                 .build();
     }

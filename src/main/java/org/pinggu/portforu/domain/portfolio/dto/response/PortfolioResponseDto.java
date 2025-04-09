@@ -4,8 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.pinggu.portforu.domain.portfolio.entity.Portfolio;
 
-import java.time.LocalDateTime;
-
+import java.time.Instant;
 
 @Getter
 @Builder
@@ -16,9 +15,9 @@ public class PortfolioResponseDto {
     private final String description;
     private final String fileUrl;
     private final Integer views;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
-    private final LocalDateTime deletedAt;
+    private final Instant createdAt;
+    private final Instant updatedAt;
+    private final Instant deletedAt;
 
     public static PortfolioResponseDto from(Portfolio portfolio) {
         return PortfolioResponseDto.builder()

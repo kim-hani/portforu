@@ -15,16 +15,16 @@ import org.pinggu.portforu.domain.member.enums.UserRole;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
 
-    @Column(unique = true, nullable = false)
+    @Column(length = 100, unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(length = 60, nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column(length = 50, nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(length = 30, nullable = false)
     private String phoneNumber;
 
     @Column(nullable = false)
@@ -53,11 +53,14 @@ public class Member extends BaseEntity {
         this.userRole = userRole;
     }
 
-    public void update(String password, String name, String phoneNumber, String address) {
-        if (password != null) this.password = password;
+    public void updateInfo(String name, String phoneNumber, String address) {
         if (name != null) this.name = name;
         if (phoneNumber != null) this.phoneNumber = phoneNumber;
         if (address != null) this.address = address;
+    }
+
+    public void updatePassword(String newPassword) {
+        if (newPassword != null) this.password = newPassword;
     }
 
     public static Member fromAuthMember(AuthMember authMember) {

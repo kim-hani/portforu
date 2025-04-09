@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.pinggu.portforu.common.domain.RefreshToken;
 import org.pinggu.portforu.common.exception.CustomException;
 import org.pinggu.portforu.config.JwtUtil;
-import org.pinggu.portforu.domain.auth.dto.response.SigninResponseDto;
-import org.pinggu.portforu.domain.auth.dto.response.SignupResponseDto;
-import org.pinggu.portforu.domain.auth.dto.request.SigninRequestDto;
-import org.pinggu.portforu.domain.auth.dto.request.SignupRequestDto;
+import org.pinggu.portforu.domain.auth.dto.response.SignInResponseDto;
+import org.pinggu.portforu.domain.auth.dto.response.SignUpResponseDto;
+import org.pinggu.portforu.domain.auth.dto.request.SignInRequestDto;
+import org.pinggu.portforu.domain.auth.dto.request.SignUpRequestDto;
 import org.pinggu.portforu.domain.auth.repository.RefreshTokenRepository;
 import org.pinggu.portforu.domain.member.entity.Member;
 import org.pinggu.portforu.domain.member.enums.UserRole;
@@ -27,7 +27,7 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
-    public SignupResponseDto signup(SignupRequestDto requestDto) {
+    public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
         if (memberRepository.existsByEmail(requestDto.getEmail())) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다.");
         }
@@ -63,7 +63,7 @@ public class AuthService {
                 savedMember.getUserRole()
         );
 
-        return SignupResponseDto.builder()
+        return SignUpResponseDto.builder()
                 .bearerToken(accessToken)
                 .id(savedMember.getId())
                 .email(savedMember.getEmail())
@@ -75,7 +75,7 @@ public class AuthService {
     }
 
     @Transactional(readOnly = true)
-    public SigninResponseDto signin(SigninRequestDto requestDto) {
+    public SignInResponseDto signIn(SignInRequestDto requestDto) {
         Member member = memberRepository.findByEmail(requestDto.getEmail()).orElseThrow(
                 () -> new CustomException(HttpStatus.BAD_REQUEST, "가입되지 않은 유저입니다.")
         );
@@ -107,7 +107,7 @@ public class AuthService {
                         () -> refreshTokenRepository.save(new RefreshToken(member.getId(), refreshToken))
                 );
 
-        return new SigninResponseDto(accessToken, refreshToken);
+        return new SignInResponseDto(accessToken, refreshToken);
     }
 
 }

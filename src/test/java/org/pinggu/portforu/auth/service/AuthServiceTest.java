@@ -10,10 +10,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.pinggu.portforu.common.domain.RefreshToken;
 import org.pinggu.portforu.common.exception.CustomException;
 import org.pinggu.portforu.config.JwtUtil;
-import org.pinggu.portforu.domain.auth.dto.request.SigninRequestDto;
-import org.pinggu.portforu.domain.auth.dto.request.SignupRequestDto;
-import org.pinggu.portforu.domain.auth.dto.response.SigninResponseDto;
-import org.pinggu.portforu.domain.auth.dto.response.SignupResponseDto;
+import org.pinggu.portforu.domain.auth.dto.request.SignInRequestDto;
+import org.pinggu.portforu.domain.auth.dto.request.SignUpRequestDto;
+import org.pinggu.portforu.domain.auth.dto.response.SignInResponseDto;
+import org.pinggu.portforu.domain.auth.dto.response.SignUpResponseDto;
 import org.pinggu.portforu.domain.auth.repository.RefreshTokenRepository;
 import org.pinggu.portforu.domain.auth.service.AuthService;
 import org.pinggu.portforu.domain.member.entity.Member;
@@ -52,12 +52,12 @@ public class AuthServiceTest {
 
     private Member member;
 
-    private SignupRequestDto signupRequest() {
-        return new SignupRequestDto(EMAIL, PASSWORD, NAME, PHONE, ADDRESS);
+    private SignUpRequestDto signupRequest() {
+        return new SignUpRequestDto(EMAIL, PASSWORD, NAME, PHONE, ADDRESS);
     }
 
-    private SigninRequestDto signinRequest() {
-        return new SigninRequestDto(EMAIL, PASSWORD);
+    private SignInRequestDto signinRequest() {
+        return new SignInRequestDto(EMAIL, PASSWORD);
     }
 
     private Member saveMember() {
@@ -76,7 +76,7 @@ public class AuthServiceTest {
         @Test
         void 회원_가입_성공() {
             // given
-            SignupRequestDto request = signupRequest();
+            SignUpRequestDto request = signupRequest();
 
             given(memberRepository.existsByEmail(EMAIL)).willReturn(false);
             given(passwordEncoder.encode(PASSWORD)).willReturn(ENCODED_PASSWORD);
@@ -89,15 +89,15 @@ public class AuthServiceTest {
                     .willReturn(ACCESS_TOKEN);
 
             // when
-            SignupResponseDto response = authService.signup(request);
+            SignUpResponseDto response = authService.signUp(request);
 
             // then
             assertThat(response)
                     .isNotNull()
                     .extracting(
-                            SignupResponseDto::getBearerToken,
-                            SignupResponseDto::getId,
-                            SignupResponseDto::getEmail
+                            SignUpResponseDto::getBearerToken,
+                            SignUpResponseDto::getId,
+                            SignUpResponseDto::getEmail
                     )
                     .containsExactly(ACCESS_TOKEN, MEMBER_ID, EMAIL);
 
@@ -107,12 +107,12 @@ public class AuthServiceTest {
         @Test
         void 중복된_이메일_입력시_에러_발생() {
             // given
-            SignupRequestDto request = signupRequest();
+            SignUpRequestDto request = signupRequest();
 
             given(memberRepository.existsByEmail(EMAIL)).willReturn(true);
 
             // when & then
-            assertThatThrownBy(() -> authService.signup(request))
+            assertThatThrownBy(() -> authService.signUp(request))
                     .isInstanceOf(CustomException.class)
                     .hasFieldOrPropertyWithValue("status", HttpStatus.BAD_REQUEST)
                     .hasMessage("이미 존재하는 이메일입니다.");
@@ -126,7 +126,7 @@ public class AuthServiceTest {
         @Test
         void 로그인_성공() {
             // given
-            SigninRequestDto request = signinRequest();
+            SignInRequestDto request = signinRequest();
 
             given(memberRepository.findByEmail(EMAIL)).willReturn(Optional.of(member));
             given(passwordEncoder.matches(PASSWORD, ENCODED_PASSWORD)).willReturn(true);
@@ -135,14 +135,14 @@ public class AuthServiceTest {
             given(refreshTokenRepository.findById(anyLong())).willReturn(Optional.empty());
 
             // when
-            SigninResponseDto response = authService.signin(request);
+            SignInResponseDto response = authService.signIn(request);
 
             // then
             assertThat(response)
                     .isNotNull()
                     .extracting(
-                            SigninResponseDto::getAccessToken,
-                            SigninResponseDto::getRefreshToken
+                            SignInResponseDto::getAccessToken,
+                            SignInResponseDto::getRefreshToken
                     )
                     .containsExactly(ACCESS_TOKEN, REFRESH_TOKEN);
 
@@ -153,12 +153,12 @@ public class AuthServiceTest {
         @Test
         void 존재하지_않는_이메일로_로그인_시도하면_에러_발생() {
             // given
-            SigninRequestDto request = new SigninRequestDto("email", PASSWORD);
+            SignInRequestDto request = new SignInRequestDto("email", PASSWORD);
 
             given(memberRepository.findByEmail("email")).willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> authService.signin(request))
+            assertThatThrownBy(() -> authService.signIn(request))
                     .isInstanceOf(CustomException.class)
                     .hasFieldOrPropertyWithValue("status", HttpStatus.BAD_REQUEST)
                     .hasMessage("가입되지 않은 유저입니다.");
@@ -167,13 +167,13 @@ public class AuthServiceTest {
         @Test
         void 잘못된_비밀번호로_로그인_시도하면_에러_발생() {
             // given
-            SigninRequestDto request = new SigninRequestDto(EMAIL, "wrongPassword");
+            SignInRequestDto request = new SignInRequestDto(EMAIL, "wrongPassword");
 
             given(memberRepository.findByEmail(EMAIL)).willReturn(Optional.of(member));
             given(passwordEncoder.matches("wrongPassword", ENCODED_PASSWORD)).willReturn(false);
 
             // when & then
-            assertThatThrownBy(() -> authService.signin(request))
+            assertThatThrownBy(() -> authService.signIn(request))
                     .isInstanceOf(CustomException.class)
                     .hasFieldOrPropertyWithValue("status", HttpStatus.UNAUTHORIZED)
                     .hasMessage("잘못된 비밀번호입니다.");

@@ -21,6 +21,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -62,8 +63,8 @@ class MembershipControllerTest {
                 .price(10000)
                 .quantity(2000)
                 .year(2025)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
                 .deletedAt(null)
                 .build();
 
@@ -87,8 +88,8 @@ class MembershipControllerTest {
                 .price(10000)
                 .quantity(2000)
                 .year(2025)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
                 .deletedAt(null)
                 .build();
 
@@ -98,8 +99,8 @@ class MembershipControllerTest {
                 .price(15000)
                 .quantity(1500)
                 .year(2023)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
                 .deletedAt(null)
                 .build();
 
@@ -128,8 +129,8 @@ class MembershipControllerTest {
                 .price(10000)
                 .quantity(2000)
                 .year(2024)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
                 .deletedAt(null)
                 .build();
 
@@ -154,8 +155,8 @@ class MembershipControllerTest {
                 .price(12000)
                 .quantity(2500)
                 .year(2025)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
                 .deletedAt(null)
                 .build();
 
@@ -180,9 +181,9 @@ class MembershipControllerTest {
                 .price(10000)
                 .quantity(2000)
                 .year(2024)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .deletedAt(LocalDateTime.now())
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
+                .deletedAt(Instant.now())
                 .build();
 
         given(membershipService.deleteMembership(eq(membershipId)))
