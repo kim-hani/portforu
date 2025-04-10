@@ -40,6 +40,11 @@ public class SubscribeService {
         Membership membership = membershipRepository.findByIdAndDeletedAtIsNull(membershipId)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "해당 멤버십이 존재하지 않습니다."));
 
+        long currentCount = subscribeRepository.countByMembership(membership);
+        if (currentCount >= membership.getQuantity()) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "멤버십 정원이 초과되었습니다.");
+        }
+
         int currentYear = Year.now().getValue();
 
         if (membership.getYear() != currentYear) {
@@ -47,7 +52,7 @@ public class SubscribeService {
         }
 
         if (subscribeRepository.existsByMemberIdAndMembershipId(memberId, membershipId)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 구독중인 멤버십입니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 구독한 멤버십입니다.");
         }
 
         Instant startDate = Instant.now();
@@ -106,4 +111,5 @@ public class SubscribeService {
 
         return subscribe.delete();
     }
+
 }

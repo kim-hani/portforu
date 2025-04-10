@@ -39,7 +39,7 @@ public class SubscribeController {
     }
 
     @Member
-    @GetMapping("/{memberId}")
+    @GetMapping
     public ResponseEntity<ApiResponse<List<SubscribeResponseDto>>> findSubscribes(
             @ModelAttribute Pagecond pagecond,
             @AuthenticationPrincipal AuthMember member
@@ -60,7 +60,7 @@ public class SubscribeController {
     }
 
     @Member
-    @DeleteMapping("/{subscribeId}/{memberId}")
+    @DeleteMapping("/{subscribeId}")
     public ResponseEntity<ApiResponse<Long>> deleteSubscribe(
             @PathVariable("subscribeId") Long subscribeId,
             @AuthenticationPrincipal AuthMember member
