@@ -10,6 +10,7 @@ import org.pinggu.portforu.domain.member.entity.Member;
 import org.pinggu.portforu.domain.member.repository.MemberRepository;
 import org.pinggu.portforu.domain.portfolio.entity.Portfolio;
 import org.pinggu.portforu.domain.portfolio.repository.PortfolioRepository;
+import org.pinggu.portforu.domain.subscribe.validator.SubscribeValidator;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,8 @@ public class CommentService {
     private final PortfolioRepository portfolioRepository;
     private final MemberRepository memberRepository;
 
+    private final SubscribeValidator subscribeValidator;
+
     @Transactional
     public CommentResponseDto saveComment(Long portfolioId, Long memberId, CommentRequestDto requestDto) {
         Portfolio portfolio = portfolioRepository.findById(portfolioId)
@@ -36,6 +39,12 @@ public class CommentService {
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."));
+
+        if (!portfolio.getMember().getId().equals(memberId)) {
+            if (!subscribeValidator.isSubscribed(memberId)) {
+                throw new CustomException(HttpStatus.UNAUTHORIZED, "댓글을 작성할 권한이 없습니다.");
+            }
+        }
 
         Comment comment = Comment.builder()
                 .member(member)
@@ -84,8 +93,12 @@ public class CommentService {
             throw new CustomException(HttpStatus.UNAUTHORIZED, "수정 권한이 없습니다.");
         }
 
-        comment.update(requestDto.getContent());
-        return CommentResponseDto.from(comment);
+        commentRepository.updateComment(commentId, requestDto.getContent());
+
+        Comment updatedComment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."));
+
+        return CommentResponseDto.from(updatedComment);
     }
 
     @Transactional

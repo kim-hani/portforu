@@ -10,6 +10,7 @@ import org.pinggu.portforu.domain.portfolio.dto.request.PortfolioUpdateRequestDt
 import org.pinggu.portforu.domain.portfolio.dto.response.PortfolioResponseDto;
 import org.pinggu.portforu.domain.portfolio.entity.Portfolio;
 import org.pinggu.portforu.domain.portfolio.repository.PortfolioRepository;
+import org.pinggu.portforu.domain.subscribe.validator.SubscribeValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,8 @@ public class PortfolioService {
 
     private final PortfolioRepository portfolioRepository;
     private final MemberRepository memberRepository;
+
+    private final SubscribeValidator subscribeValidator;
 
     @Transactional
     public PortfolioResponseDto savePortfolio(PortfolioRequestDto request, Long memberId) {
@@ -49,16 +52,56 @@ public class PortfolioService {
         return portfolioPage.map(PortfolioResponseDto::from);
     }
 
-
     @Transactional
-    public PortfolioResponseDto findPortfolio(Long portfolioId) {
+    public PortfolioResponseDto findPortfolio(Long portfolioId,Long viewerId) {
         Portfolio portfolio = portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "게시물을 찾을 수 없습니다."));
 
         if (portfolio.isDeleted()) {
             throw new CustomException(HttpStatus.NOT_FOUND, "삭제된 게시물입니다.");
         }
+
+        if (!portfolio.getMember().getId().equals(viewerId)) {
+
+            if (!subscribeValidator.isSubscribed(viewerId)) {
+                Member viewer = memberRepository.findById(viewerId)
+                        .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "회원 정보를 찾을 수 없습니다."));
+                if (viewer.getViewCount() <= 0) {
+                    throw new CustomException(HttpStatus.FORBIDDEN, "포트폴리오 조회 가능 횟수를 모두 사용했습니다.");
+                }
+                viewer.decrementRemainingViewCount();
+            }
+        }
+
         portfolio.incrementViews();
+
+        return PortfolioResponseDto.from(portfolio);
+    }
+
+    // 마이페이지에서 내가 올린 포트폴리오만 조회하기
+    @Transactional(readOnly = true)
+    public Page<PortfolioResponseDto> findMyAllPortfolios(Long memberId,Pagecond pagecond) {
+
+        PageRequest pageRequest = PageRequest.of(pagecond.getPageNum() - 1, pagecond.getPageSize());
+        Page<Portfolio> portfolios = portfolioRepository.findAllByMemberIdAndDeletedAtIsNull(memberId, pageRequest);
+        if(portfolios.isEmpty()){
+            throw new CustomException(HttpStatus.NOT_FOUND, "게시물을 찾을 수 없습니다.");
+        }
+        return portfolios.map(PortfolioResponseDto::from);
+    }
+
+    @Transactional
+    public PortfolioResponseDto findMyPortfolioDetail(Long portfolioId, Long memberId) {
+        Portfolio portfolio = portfolioRepository.findById(portfolioId)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "게시물을 찾을 수 없습니다."));
+
+        if (portfolio.isDeleted()) {
+            throw new CustomException(HttpStatus.NOT_FOUND, "삭제된 게시물입니다.");
+        }
+
+        if (!portfolio.getMember().getId().equals(memberId)) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED, "게시물에 대한 접근 권한이 없습니다.");
+        }
 
         return PortfolioResponseDto.from(portfolio);
     }
@@ -76,8 +119,17 @@ public class PortfolioService {
             throw new CustomException(HttpStatus.UNAUTHORIZED, "수정 권한이 없습니다.");
         }
 
-        portfolio.update(updateDto.getTitle(), updateDto.getDescription(), updateDto.getFileUrl());
-        return PortfolioResponseDto.from(portfolio);
+        Integer updatedRows = portfolioRepository.updatePortfolio(portfolioId,
+                updateDto.getTitle(), updateDto.getDescription(), updateDto.getFileUrl());
+
+        if (updatedRows <= 0) {
+            throw new CustomException(HttpStatus.NOT_MODIFIED, "수정 사항이 없습니다.");
+        }
+
+        Portfolio updatedPortfolio = portfolioRepository.findById(portfolioId)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "게시물을 찾을 수 없습니다."));
+
+        return PortfolioResponseDto.from(updatedPortfolio);
     }
 
     @Transactional
