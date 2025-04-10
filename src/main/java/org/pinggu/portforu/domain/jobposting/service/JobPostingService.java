@@ -58,12 +58,21 @@ public class JobPostingService {
 
     @Transactional
     public JobPostingUpdateResponseDto updateJobPosting(Long jobPostingId, JobPostingUpdateRequestDto request) {
-        JobPosting jobPosting = findJobPostingById(jobPostingId);
+        findJobPostingById(jobPostingId);
 
-        jobPosting.update(request.getName(), request.getIndustry(), request.getAddress(), request.getSalary(),
-                request.getQualifications(), request.getPreferential(), request.getClosingDate());
+        Integer updatedRows = jobPostingRepository.updateJobPosting(
+                jobPostingId, request.getName(), request.getIndustry(), request.getAddress(), request.getSalary(),
+                request.getQualifications(), request.getPreferential(), request.getClosingDate()
+        );
 
-        return JobPostingUpdateResponseDto.from(jobPosting);
+        if (updatedRows <= 0) {
+            throw new CustomException(HttpStatus.NOT_MODIFIED, "수정 사항이 없습니다.");
+        }
+
+        JobPosting updatedJobPosting = jobPostingRepository.findById(jobPostingId)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "채용 공고가 존재하지 않습니다."));
+
+        return JobPostingUpdateResponseDto.from(updatedJobPosting);
     }
 
     @Transactional

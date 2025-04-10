@@ -33,20 +33,27 @@ public class MemberService {
     public MemberResponseDto updateMember(
             AuthMember authMember, Long id, MemberUpdateRequestDto requestDto
     ) {
-        Member member = findMemberById(id);
         validateOwnership(authMember, id);
 
-        member.updateInfo(requestDto.getName(), requestDto.getPhoneNumber(), requestDto.getAddress());
+        Integer updatedRows = memberRepository.updateMemberInfo(
+                id, requestDto.getName(), requestDto.getPhoneNumber(), requestDto.getAddress()
+        );
 
-        return MemberResponseDto.from(member);
+        if (updatedRows <= 0) {
+            throw new CustomException(HttpStatus.NOT_MODIFIED, "수정 사항이 없습니다.");
+        }
+
+        Member updatedMember = findMemberById(id);
+
+        return MemberResponseDto.from(updatedMember);
     }
 
     @Transactional
     public MemberResponseDto updatePassword(
             AuthMember authMember, Long id, PasswordUpdateRequestDto requestDto
     ) {
-        Member member = findMemberById(id);
         validateOwnership(authMember, id);
+        Member member = findMemberById(id);
 
         if(!passwordEncoder.matches(requestDto.getOldPassword(), member.getPassword())) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "기존 비밀번호가 일치하지 않습니다.");
@@ -57,9 +64,13 @@ public class MemberService {
         }
 
         String newEncodedPassword = passwordEncoder.encode(requestDto.getNewPassword());
-        member.updatePassword(newEncodedPassword);
+        Integer updatedRows = memberRepository.updatePassword(id, newEncodedPassword);
 
-        return MemberResponseDto.from(member);
+        if (updatedRows <= 0) {
+            throw new CustomException(HttpStatus.NOT_MODIFIED, "비밀번호 변경에 실패했습니다.");
+        }
+
+        return MemberResponseDto.from(findMemberById(id));
     }
 
     @Transactional

@@ -42,15 +42,4 @@ public class JobPosting extends BaseEntity {
         this.closingDate = closingDate;
     }
 
-    public void update(String name, String industry, String address, String salary, String qualifications,
-                       String preferential, String closingDate) {
-        this.name = name;
-        this.industry = industry;
-        this.address = address;
-        this.salary = salary;
-        this.qualifications = qualifications;
-        this.preferential = preferential;
-        this.closingDate = closingDate;
-    }
-
 }

@@ -33,11 +33,4 @@ public class Membership extends BaseEntity {
         this.year = year;
     }
 
-    public void update(String name, Integer price, Integer quantity, Integer year) {
-        this.name = name;
-        this.price = price;
-        this.quantity = quantity;
-        this.year = year;
-    }
-
 }

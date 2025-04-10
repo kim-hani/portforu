@@ -38,15 +38,6 @@ public class Subscribe extends BaseEntity {
         this.endDate = endDate;
     }
 
-    public Subscribe update(Membership membership, Instant startDate, Instant endDate) {
-        return Subscribe.builder()
-                .member(this.member)
-                .membership(membership)
-                .startDate(startDate)
-                .endDate(endDate)
-                .build();
-    }
-
     public boolean isActive() {
         return Instant.now().isBefore(this.endDate);
     }

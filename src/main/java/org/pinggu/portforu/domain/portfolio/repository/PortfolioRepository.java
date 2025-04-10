@@ -20,7 +20,7 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
 
     Page<Portfolio> findAllByMemberIdAndDeletedAtIsNull(Long memberId, Pageable pageable);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("UPDATE Portfolio p " +
             "SET p.title = COALESCE(:title, p.title), " +
             "    p.description = COALESCE(:description, p.description), " +

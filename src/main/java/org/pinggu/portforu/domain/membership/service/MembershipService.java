@@ -63,12 +63,16 @@ public class MembershipService {
             Long membershipId,
             MembershipUpdateRequestDto request
     ) {
-        Membership membership = membershipRepository.findByIdAndDeletedAtIsNull(membershipId)
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "아이디가 없거나 삭제된 멤버십입니다."));
+        Integer updatedRows = membershipRepository.updateMembership(
+                membershipId, request.getName(), request.getPrice(), request.getQuantity(), request.getYear()
+        );
 
-        membership.update(request.getName(), request.getPrice(), request.getQuantity(), request.getYear());
+        if (updatedRows <= 0) {
+            throw new CustomException(HttpStatus.NOT_MODIFIED, "수정 사항이 없습니다.");
+        }
 
-        Membership updatedMembership = membershipRepository.save(membership);
+        Membership updatedMembership = membershipRepository.findByIdAndDeletedAtIsNull(membershipId)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "멤버십이 존재하지 않습니다."));
 
         return MembershipResponseDto.from(updatedMembership);
     }
@@ -82,10 +86,10 @@ public class MembershipService {
 
     public Membership findMembership(Long id) {
         Membership membership = membershipRepository.findById(id)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "멤버쉽이 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "멤버십이 존재하지 않습니다."));
 
         if (membership.isDeleted()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 삭제된 멤버쉽입니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 삭제된 멤버십입니다.");
         }
 
         return membership;

@@ -36,18 +36,6 @@ public class Portfolio extends BaseEntity {
         this.views = views;
     }
 
-    public void update(String title, String description, String fileUrl) {
-        if (title != null) {
-            this.title = title;
-        }
-        if (description != null) {
-            this.description = description;
-        }
-        if (fileUrl != null) {
-            this.fileUrl = fileUrl;
-        }
-    }
-
     public void incrementViews() {
         if (this.views == null) {
             this.views = 1;

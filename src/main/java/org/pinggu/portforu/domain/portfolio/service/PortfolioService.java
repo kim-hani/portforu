@@ -119,8 +119,9 @@ public class PortfolioService {
             throw new CustomException(HttpStatus.UNAUTHORIZED, "수정 권한이 없습니다.");
         }
 
-        Integer updatedRows = portfolioRepository.updatePortfolio(portfolioId,
-                updateDto.getTitle(), updateDto.getDescription(), updateDto.getFileUrl());
+        Integer updatedRows = portfolioRepository.updatePortfolio(
+                portfolioId, updateDto.getTitle(), updateDto.getDescription(), updateDto.getFileUrl()
+        );
 
         if (updatedRows <= 0) {
             throw new CustomException(HttpStatus.NOT_MODIFIED, "수정 사항이 없습니다.");

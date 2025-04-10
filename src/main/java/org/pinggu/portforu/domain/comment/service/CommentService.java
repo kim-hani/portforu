@@ -121,7 +121,6 @@ public class CommentService {
             throw new CustomException(HttpStatus.UNAUTHORIZED, "삭제 권한이 없습니다.");
         }
 
-        // 소프트 삭제 처리
         return comment.delete();
     }
 }

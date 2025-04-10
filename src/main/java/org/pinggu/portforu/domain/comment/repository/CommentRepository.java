@@ -14,7 +14,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     List<Comment> findByPortfolioId(Long portfolioId);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("UPDATE Comment c SET c.content = COALESCE(:content, c.content) " +
             "WHERE c.id = :commentId AND c.deletedAt IS NULL")
     Integer updateComment(@Param("commentId") Long commentId,
