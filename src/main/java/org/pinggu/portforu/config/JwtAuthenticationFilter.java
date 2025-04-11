@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -27,6 +28,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private static final List<String> EXCLUDE_URI_PREFIXES = List.of("/oauth2/", "/login/", "/error", "/favicon.ico");
 
     @Override
     protected void doFilterInternal(
@@ -34,6 +36,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse httpResponse,
             @NonNull FilterChain chain
     ) throws ServletException, IOException {
+
+        String uri = httpRequest.getRequestURI();
+
+        if (isExcludedUri(uri)) {
+            chain.doFilter(httpRequest, httpResponse);
+            return;
+        }
+
         String authorizationHeader = httpRequest.getHeader("Authorization");
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -63,6 +73,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
         chain.doFilter(httpRequest, httpResponse);
+    }
+
+    private boolean isExcludedUri(String uri) {
+        return EXCLUDE_URI_PREFIXES.stream().anyMatch(uri::startsWith);
     }
 
     private void setAuthentication(Claims claims) {
