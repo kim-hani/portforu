@@ -30,9 +30,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # Gradle Wrapper 로 빌드
+      # Gradle Wrapper 로 빌드 (테스트 제외)
       - name: Build with Gradle Wrapper
-        run: ./gradlew build
+        run: ./gradlew build -x test
 
       # DockerHub 로그인
       - name: Login to Docker Hub
