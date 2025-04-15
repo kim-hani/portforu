@@ -135,6 +135,10 @@ public class PortfolioService {
         String newFileUrl = portfolio.getFileUrl();
         try {
             if (updateDto.getImageFile() != null && !updateDto.getImageFile().isEmpty()) {
+                if (portfolio.getFileUrl() != null && !portfolio.getFileUrl().isBlank()) {
+                    s3Service.markFileAsInactive(portfolio.getFileUrl());
+                }
+
                 newFileUrl = s3Service.uploadImage(updateDto.getImageFile());
             }
         } catch (IOException e) {
