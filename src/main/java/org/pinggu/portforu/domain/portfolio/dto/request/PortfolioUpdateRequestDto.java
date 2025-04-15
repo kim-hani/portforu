@@ -3,6 +3,7 @@ package org.pinggu.portforu.domain.portfolio.dto.request;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @AllArgsConstructor
@@ -13,7 +14,5 @@ public class PortfolioUpdateRequestDto {
 
     private String description;
 
-    @Size(max = 500, message = "파일url은 500자까지 입력 가능합니다.")
-    private String fileUrl;
-
+    private MultipartFile imageFile;
 }
