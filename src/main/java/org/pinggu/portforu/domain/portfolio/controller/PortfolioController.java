@@ -29,7 +29,7 @@ public class PortfolioController {
     @PostMapping
     public ResponseEntity<ApiResponse<PortfolioResponseDto>> savePortfolio(
             @AuthenticationPrincipal AuthMember authMember,
-            @Valid @RequestBody PortfolioRequestDto requestDto
+            @Valid @ModelAttribute PortfolioRequestDto requestDto
     ){
         return ResponseEntity.ok(ApiResponse.of(portfolioService.savePortfolio(requestDto,authMember.getId())));
     }
@@ -90,7 +90,7 @@ public class PortfolioController {
     public ResponseEntity<ApiResponse<PortfolioResponseDto>> updatePortfolio(
             @AuthenticationPrincipal AuthMember authMember,
             @PathVariable Long portfolioId,
-            @Valid @RequestBody PortfolioUpdateRequestDto requestDto
+            @Valid @ModelAttribute PortfolioUpdateRequestDto requestDto
     ) {
         return ResponseEntity.ok().body(ApiResponse.of(
                 portfolioService.updatePortfolio(portfolioId, requestDto, authMember.getId())));

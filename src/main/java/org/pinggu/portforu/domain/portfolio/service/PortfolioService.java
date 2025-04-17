@@ -17,12 +17,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+
 @Service
 @RequiredArgsConstructor
 public class PortfolioService {
 
     private final PortfolioRepository portfolioRepository;
     private final MemberRepository memberRepository;
+    private final S3Service s3Service;
 
     private final SubscribeValidator subscribeValidator;
 
@@ -31,11 +34,20 @@ public class PortfolioService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."));
 
+        String fileUrl = null;
+        try {
+            if (request.getImageFile() != null && !request.getImageFile().isEmpty()) {
+                fileUrl = s3Service.uploadImage(request.getImageFile());
+            }
+        } catch (IOException e) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "파일업로드에 실패하였습니다.");
+        }
+
         Portfolio portfolio = Portfolio.builder()
                 .member(member)
                 .title(request.getTitle())
                 .description(request.getDescription())
-                .fileUrl(request.getFileUrl())
+                .fileUrl(fileUrl)
                 .views(0)
                 .build();
 
@@ -119,8 +131,24 @@ public class PortfolioService {
             throw new CustomException(HttpStatus.UNAUTHORIZED, "수정 권한이 없습니다.");
         }
 
+        String newFileUrl = portfolio.getFileUrl();
+        try {
+            if (updateDto.getImageFile() != null && !updateDto.getImageFile().isEmpty()) {
+                if (portfolio.getFileUrl() != null && !portfolio.getFileUrl().isBlank()) {
+                    s3Service.markFileAsInactive(portfolio.getFileUrl());
+                }
+
+                newFileUrl = s3Service.uploadImage(updateDto.getImageFile());
+            }
+        } catch (IOException e) {
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 업로드에 실패했습니다.");
+        }
+
         Integer updatedRows = portfolioRepository.updatePortfolio(
-                portfolioId, updateDto.getTitle(), updateDto.getDescription(), updateDto.getFileUrl()
+                portfolioId,
+                updateDto.getTitle(),
+                updateDto.getDescription(),
+                newFileUrl
         );
 
         if (updatedRows <= 0) {
