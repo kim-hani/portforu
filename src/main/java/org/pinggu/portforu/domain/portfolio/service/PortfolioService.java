@@ -2,7 +2,6 @@ package org.pinggu.portforu.domain.portfolio.service;
 
 import lombok.RequiredArgsConstructor;
 import org.pinggu.portforu.common.domain.Pagecond;
-import org.pinggu.portforu.domain.portfolio.s3.service.S3Service;
 import org.pinggu.portforu.common.exception.CustomException;
 import org.pinggu.portforu.domain.member.entity.Member;
 import org.pinggu.portforu.domain.member.repository.MemberRepository;
