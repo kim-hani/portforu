@@ -18,6 +18,7 @@ public class SubscribeResponseDto {
     private final Instant startDate;
     private final Instant endDate;
     private final boolean active;
+    private final String status;
 
     public static SubscribeResponseDto from(Subscribe subscribe, Payment payment) {
         return SubscribeResponseDto.builder()
@@ -29,6 +30,7 @@ public class SubscribeResponseDto {
                 .startDate(subscribe.getStartDate())
                 .endDate(subscribe.getEndDate())
                 .active(subscribe.isActive())
+                .status(subscribe.getStatus().name())
                 .build();
     }
 }

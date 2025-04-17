@@ -1,8 +1,9 @@
 package org.pinggu.portforu.domain.payment.enums;
 
 public enum PaymentMethod {
-    CREDIT_CARD,
-    DEBIT_CARD,
-    PAYPAL,
-    OTHER
+    CARD,
+    VIRTUAL_ACCOUNT,
+    ACCOUNT_TRANSFER,
+    MOBILE_PHONE,
+    TOSS_PAY
 }

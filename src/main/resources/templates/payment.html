@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>결제하기</title>
+    <script src="https://js.tosspayments.com/v1/payment"></script>
+</head>
+<body>
+
+<h1>결제 페이지</h1>
+
+<button id="payment-button">결제하기</button>
+<button id="cancel-button" style="margin-top: 10px;">결제 취소</button>
+
+<script th:inline="javascript">
+    const clientKey = /*[[${clientKey}]]*/ "";
+    const orderId = /*[[${orderId}]]*/ "";
+    const amount = /*[[${amount}]]*/ 0;
+    const orderName = /*[[${orderName}]]*/ "";
+    const customerName = /*[[${customerName}]]*/ "";
+    const successUrl = /*[[${successUrl}]]*/ "";
+    const failUrl = /*[[${failUrl}]]*/ "";
+
+    const tossPayments = TossPayments(clientKey);
+
+    document.getElementById("payment-button").addEventListener("click", function () {
+        tossPayments.requestPayment('카드', {
+            amount: parseInt(amount),
+            orderId,
+            orderName,
+            customerName,
+            successUrl,
+            failUrl
+        });
+    });
+
+    document.getElementById("cancel-button").addEventListener("click", function () {
+        if (!confirm("결제를 취소하시겠습니까?")) return;
+
+        const orderIdParam = encodeURIComponent(orderId);
+        const cancelUrl = `/api/v1/payments/cancel?orderId=${orderIdParam}&reason=사용자 요청 취소`;
+
+        window.location.href = cancelUrl;
+    });
+</script>
+
+
+</body>
+</html>
