@@ -20,14 +20,14 @@ public class AuthController {
     private final AuthService authService;
     private final RefreshTokenService refreshTokenService;
 
-    @PostMapping("/signup")
+    @PostMapping("/sign-up")
     public ResponseEntity<ApiResponse<SignUpResponseDto>> signUp(
             @Valid @RequestBody SignUpRequestDto requestDto
     ) {
         return ResponseEntity.ok().body(ApiResponse.of(authService.signUp(requestDto)));
     }
 
-    @PostMapping("/signin")
+    @PostMapping("/sign-in")
     public ResponseEntity<ApiResponse<SignInResponseDto>> signIn(
             @Valid @RequestBody SignInRequestDto requestDto
     ) {

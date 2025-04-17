@@ -1,4 +1,4 @@
-package org.pinggu.portforu.auth.service;
+package org.pinggu.portforu.domain.auth.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -47,21 +47,28 @@ public class AuthServiceTest {
     private static final String PHONE = "010-1234-0410";
     private static final String ADDRESS = "고양시 야옹동";
     private static final Long MEMBER_ID = 1L;
-    private static final String ACCESS_TOKEN = "accessToken";
-    private static final String REFRESH_TOKEN = "refreshToken";
+    private static final String ACCESS_TOKEN = "Bearer accessToken";
+    private static final String REFRESH_TOKEN = "Bearer refreshToken";
 
     private Member member;
 
-    private SignUpRequestDto signupRequest() {
+    private SignUpRequestDto signUpRequest() {
         return new SignUpRequestDto(EMAIL, PASSWORD, NAME, PHONE, ADDRESS);
     }
 
-    private SignInRequestDto signinRequest() {
+    private SignInRequestDto signInRequest() {
         return new SignInRequestDto(EMAIL, PASSWORD);
     }
 
     private Member saveMember() {
-        Member savedMember = new Member(EMAIL, ENCODED_PASSWORD, NAME, PHONE, ADDRESS, UserRole.ROLE_USER);
+        Member savedMember = Member.builder()
+                .email(EMAIL)
+                .password(ENCODED_PASSWORD)
+                .name(NAME)
+                .phoneNumber(PHONE)
+                .address(ADDRESS)
+                .userRole(UserRole.ROLE_USER)
+                .build();
         ReflectionTestUtils.setField(savedMember, "id", MEMBER_ID);
         return savedMember;
     }
@@ -76,7 +83,7 @@ public class AuthServiceTest {
         @Test
         void 회원_가입_성공() {
             // given
-            SignUpRequestDto request = signupRequest();
+            SignUpRequestDto request = signUpRequest();
 
             given(memberRepository.existsByEmail(EMAIL)).willReturn(false);
             given(passwordEncoder.encode(PASSWORD)).willReturn(ENCODED_PASSWORD);
@@ -87,6 +94,8 @@ public class AuthServiceTest {
             });
             given(jwtUtil.createToken(anyLong(), anyString(), anyString(), anyString(), anyString(), any(UserRole.class)))
                     .willReturn(ACCESS_TOKEN);
+            given(jwtUtil.createRefreshToken(anyLong(), anyString(), anyString(), anyString(), anyString(), any(UserRole.class)))
+                    .willReturn(REFRESH_TOKEN);
 
             // when
             SignUpResponseDto response = authService.signUp(request);
@@ -97,9 +106,12 @@ public class AuthServiceTest {
                     .extracting(
                             SignUpResponseDto::getBearerToken,
                             SignUpResponseDto::getId,
-                            SignUpResponseDto::getEmail
+                            SignUpResponseDto::getEmail,
+                            SignUpResponseDto::getName,
+                            SignUpResponseDto::getAddress,
+                            SignUpResponseDto::getUserRole
                     )
-                    .containsExactly(ACCESS_TOKEN, MEMBER_ID, EMAIL);
+                    .containsExactly(ACCESS_TOKEN, MEMBER_ID, EMAIL, NAME, PHONE, ADDRESS, UserRole.ROLE_USER.name());
 
             then(memberRepository).should().save(any(Member.class));
         }
@@ -107,7 +119,7 @@ public class AuthServiceTest {
         @Test
         void 중복된_이메일_입력시_에러_발생() {
             // given
-            SignUpRequestDto request = signupRequest();
+            SignUpRequestDto request = signUpRequest();
 
             given(memberRepository.existsByEmail(EMAIL)).willReturn(true);
 
@@ -126,7 +138,7 @@ public class AuthServiceTest {
         @Test
         void 로그인_성공() {
             // given
-            SignInRequestDto request = signinRequest();
+            SignInRequestDto request = signInRequest();
 
             given(memberRepository.findByEmail(EMAIL)).willReturn(Optional.of(member));
             given(passwordEncoder.matches(PASSWORD, ENCODED_PASSWORD)).willReturn(true);

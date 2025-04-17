@@ -1,4 +1,4 @@
-package org.pinggu.portforu.member.repository;
+package org.pinggu.portforu.domain.member.repository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -32,7 +32,14 @@ public class MemberRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        member = new Member(EMAIL, PASSWORD, NAME, PHONE, ADDRESS, UserRole.ROLE_USER);
+        member = Member.builder()
+                .email(EMAIL)
+                .password(PASSWORD)
+                .name(NAME)
+                .phoneNumber(PHONE)
+                .address(ADDRESS)
+                .userRole(UserRole.ROLE_USER)
+                .build();
         member = memberRepository.save(member);
     }
 
@@ -69,7 +76,7 @@ public class MemberRepositoryTest {
                     .isPresent()
                     .get()
                     .usingRecursiveComparison()
-                    .ignoringFields("id", "createdAt", "updatedAt")
+                    .ignoringFields("id", "createdAt", "updatedAt", "viewCount")
                     .isEqualTo(member);
         }
 
@@ -86,7 +93,14 @@ public class MemberRepositoryTest {
     @Test
     void 중복_이메일_등록_시도_시_에러_발생() {
         // given & when
-        Member newMember = new Member(EMAIL, "newPassword", "newName", "phone", "address", UserRole.ROLE_USER);
+        Member newMember = Member.builder()
+                .email(EMAIL)
+                .password("newPassword")
+                .name("newName")
+                .phoneNumber("phone")
+                .address("address")
+                .userRole(UserRole.ROLE_USER)
+                .build();
 
         Throwable actualException = catchThrowable(() -> memberRepository.saveAndFlush(newMember));
 
