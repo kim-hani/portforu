@@ -1,4 +1,4 @@
-package org.pinggu.portforu.common.domain.s3.service;
+package org.pinggu.portforu.domain.portfolio.s3.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CopyObjectRequest;

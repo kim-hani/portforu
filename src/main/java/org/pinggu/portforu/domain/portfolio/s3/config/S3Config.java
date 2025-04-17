@@ -1,4 +1,4 @@
-package org.pinggu.portforu.common.domain.s3.config;
+package org.pinggu.portforu.domain.portfolio.s3.config;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
