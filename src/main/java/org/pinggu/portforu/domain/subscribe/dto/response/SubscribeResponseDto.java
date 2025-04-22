@@ -25,7 +25,7 @@ public class SubscribeResponseDto {
                 .id(subscribe.getId())
                 .memberId(subscribe.getMember().getId())
                 .membershipId(subscribe.getMembership().getId())
-                .paymentMethod(payment.getPaymentMethod().name())
+                .paymentMethod(payment.getPaymentMethod() != null ? payment.getPaymentMethod().name() : null)
                 .paymentId(payment.getId())
                 .startDate(subscribe.getStartDate())
                 .endDate(subscribe.getEndDate())
@@ -33,4 +33,5 @@ public class SubscribeResponseDto {
                 .status(subscribe.getStatus().name())
                 .build();
     }
+
 }

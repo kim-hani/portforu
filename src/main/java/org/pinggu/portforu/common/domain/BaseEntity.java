@@ -13,7 +13,8 @@ import java.time.Instant;
 @EntityListeners(AuditingEntityListener.class)
 public class BaseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
 
     @CreatedDate
@@ -24,20 +25,16 @@ public class BaseEntity {
     @Column
     private Instant updatedAt;
 
-    @Column
-    private Instant deletedAt;
+    @Column(nullable = false)
+    private Boolean isDeleted = Boolean.FALSE;
 
-    public boolean isDeleted() {
-        return deletedAt != null;
-    }
-
-    public Long delete() {
-        this.deletedAt = Instant.now();
+    public Long softDelete() {
+        this.isDeleted = true;
         return this.id;
     }
 
-    public void restore() {
-        this.deletedAt = null;
+    public void restore(){
+        this.isDeleted = false;
     }
 
 }

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/comments")
@@ -25,12 +24,11 @@ public class CommentController {
     @Member
     @PostMapping("/{portfolioId}")
     public ResponseEntity<ApiResponse<CommentResponseDto>> saveComment(
-            @PathVariable("portfolioId") Long portfolioId,
             @AuthenticationPrincipal AuthMember authMember,
+            @PathVariable("portfolioId") Long portfolioId,
             @Valid @RequestBody CommentRequestDto requestDto
     ) {
-        return ResponseEntity.ok().body(ApiResponse.of(
-                commentService.saveComment(portfolioId, authMember.getId(), requestDto)));
+        return ResponseEntity.ok().body(ApiResponse.of(commentService.saveComment(authMember, portfolioId, requestDto)));
     }
 
     @Member
@@ -42,24 +40,25 @@ public class CommentController {
 
     @Member
     @PutMapping("/{portfolioId}/{commentId}")
-    public ResponseEntity<ApiResponse<CommentResponseDto>> updateComment(
+    public ResponseEntity<ApiResponse<String>> updateComment(
+            @AuthenticationPrincipal AuthMember authMember,
             @PathVariable("portfolioId") Long portfolioId,
             @PathVariable("commentId") Long commentId,
-            @AuthenticationPrincipal AuthMember authMember,
             @Valid @RequestBody CommentRequestDto requestDto
     ) {
-        return ResponseEntity.ok().body(ApiResponse.of(
-                commentService.updateComment(portfolioId, commentId, authMember.getId(), requestDto)));
+        commentService.updateComment(authMember, portfolioId, commentId, requestDto);
+        return ResponseEntity
+                .ok(ApiResponse.of("댓글 수정이 완료되었습니다."));
     }
 
     @Member
     @DeleteMapping("/{portfolioId}/{commentId}")
     public ResponseEntity<ApiResponse<Long>> deleteComment(
+            @AuthenticationPrincipal AuthMember authMember,
             @PathVariable("portfolioId") Long portfolioId,
-            @PathVariable("commentId") Long commentId,
-            @AuthenticationPrincipal AuthMember authMember
+            @PathVariable("commentId") Long commentId
     ) {
-        return ResponseEntity.ok(ApiResponse.of
-                (commentService.deleteComment(portfolioId, commentId, authMember.getId())));
+        return ResponseEntity.ok(ApiResponse.of(commentService.deleteComment(authMember, portfolioId, commentId)));
     }
+
 }

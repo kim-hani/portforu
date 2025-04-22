@@ -15,10 +15,10 @@ public class PaymentPageViewController {
     }
 
     @GetMapping("/payments/fail")
-    public String paymentFailView(@RequestParam String message,
+    public String paymentFailView(@RequestParam("errorCode") String errorCode,
                                   @RequestParam Long subscribeId,
                                   Model model) {
-        model.addAttribute("message", message);
+        model.addAttribute("message", errorCode);
         model.addAttribute("subscribeId", subscribeId);
         return "payment-fail";
     }

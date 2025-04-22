@@ -8,7 +8,8 @@ import org.pinggu.portforu.domain.member.entity.Member;
 @Builder
 public class SignUpResponseDto {
 
-    private final String bearerToken;
+    private final String accessToken;
+    private final String refreshToken;
 
     private final Long id;
     private final String email;
@@ -17,9 +18,10 @@ public class SignUpResponseDto {
     private final String address;
     private final String userRole;
 
-    public static SignUpResponseDto from(Member member, String bearerToken) {
+    public static SignUpResponseDto from(Member member, String accessToken, String refreshToken) {
         return SignUpResponseDto.builder()
-                .bearerToken(bearerToken)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .id(member.getId())
                 .email(member.getEmail())
                 .name(member.getName())

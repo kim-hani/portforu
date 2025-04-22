@@ -1,9 +1,12 @@
 package org.pinggu.portforu.domain.subscribe.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.pinggu.portforu.common.domain.BaseEntity;
 import org.pinggu.portforu.domain.member.entity.Member;
 import org.pinggu.portforu.domain.membership.entity.Membership;
@@ -12,9 +15,11 @@ import org.pinggu.portforu.domain.subscribe.enums.SubscribeStatus;
 import java.time.Instant;
 
 @Getter
-@NoArgsConstructor
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "subscribes")
+@SQLDelete(sql = "UPDATE subscribes  SET is_deleted = true WHERE id = ?")
+@Where(clause = "is_deleted = false")
 public class Subscribe extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -48,13 +53,14 @@ public class Subscribe extends BaseEntity {
     }
 
     public void cancel() {
-        if (this.status == SubscribeStatus.CANCELLED) {
+        if (this.status == SubscribeStatus.CANCELED) {
             throw new IllegalStateException("이미 취소된 구독입니다.");
         }
-        if (this.status != SubscribeStatus.ACTIVE) {
-            throw new IllegalStateException("구독이 활성 상태일 때만 취소할 수 있습니다.");
+        if ((this.status == SubscribeStatus.PENDING && this.getCreatedAt().isBefore(Instant.now().minusSeconds(60)))
+                || (this.status != SubscribeStatus.ACTIVE && this.status != SubscribeStatus.PENDING)) {
+            throw new IllegalStateException("구독이 활성 상태이거나 결제 직후 대기 상태일 때만 취소할 수 있습니다.");
         }
-        this.status = SubscribeStatus.CANCELLED;
+        this.status = SubscribeStatus.CANCELED;
     }
 
     public void expire() {

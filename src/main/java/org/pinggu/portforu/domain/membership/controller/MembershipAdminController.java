@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/memberships")
+@RequestMapping("/api/v1/admin/memberships")
 public class MembershipAdminController {
 
     private final MembershipService membershipService;
@@ -21,18 +21,20 @@ public class MembershipAdminController {
     @Admin
     @PostMapping
     public ResponseEntity<ApiResponse<MembershipResponseDto>> saveMembership(
-            @Valid @RequestBody MembershipSaveRequestDto request
+            @Valid @RequestBody MembershipSaveRequestDto requestDto
     ) {
-        return ResponseEntity.ok().body(ApiResponse.of(membershipService.saveMembership(request)));
+        return ResponseEntity.ok().body(ApiResponse.of(membershipService.saveMembership(requestDto)));
     }
 
     @Admin
     @PutMapping("/{membershipId}")
-    public ResponseEntity<ApiResponse<MembershipResponseDto>> updateMembership(
+    public ResponseEntity<ApiResponse<String>> updateMembership(
             @PathVariable("membershipId") Long membershipId,
-            @Valid @RequestBody MembershipUpdateRequestDto request
+            @Valid @RequestBody MembershipUpdateRequestDto requestDto
     ) {
-        return ResponseEntity.ok(ApiResponse.of(membershipService.updateMembership(membershipId, request)));
+        membershipService.updateMembership(membershipId, requestDto);
+
+        return ResponseEntity.ok(ApiResponse.of("멤버십 수정이 완료되었습니다."));
     }
 
     @Admin

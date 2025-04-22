@@ -28,20 +28,19 @@ public class AuthService {
 
     @Transactional
     public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
-        if (memberRepository.existsByEmail(requestDto.getEmail())) {
+        String normalizedEmail = requestDto.getEmail().toLowerCase();
+
+        if (memberRepository.existsByEmail(normalizedEmail)) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다.");
         }
 
-        String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
-        UserRole userRole = UserRole.ROLE_USER;
-
         Member newMember = Member.builder()
-                .email(requestDto.getEmail())
-                .password(encodedPassword)
+                .email(normalizedEmail)
+                .password(passwordEncoder.encode(requestDto.getPassword()))
                 .name(requestDto.getName())
                 .phoneNumber(requestDto.getPhoneNumber())
                 .address(requestDto.getAddress())
-                .userRole(userRole)
+                .userRole(UserRole.ROLE_USER)
                 .build();
 
         Member savedMember = memberRepository.save(newMember);
@@ -52,7 +51,8 @@ public class AuthService {
                 savedMember.getName(),
                 savedMember.getPhoneNumber(),
                 savedMember.getAddress(),
-                savedMember.getUserRole()
+                savedMember.getUserRole(),
+                savedMember.getProvider()
         );
         String refreshToken = jwtUtil.createRefreshToken(
                 savedMember.getId(),
@@ -60,11 +60,20 @@ public class AuthService {
                 savedMember.getName(),
                 savedMember.getPhoneNumber(),
                 savedMember.getAddress(),
-                savedMember.getUserRole()
+                savedMember.getUserRole(),
+                savedMember.getProvider()
+        );
+
+        refreshTokenRepository.save(
+                RefreshToken.builder()
+                        .memberId(savedMember.getId())
+                        .token(refreshToken)
+                        .build()
         );
 
         return SignUpResponseDto.builder()
-                .bearerToken(accessToken)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .id(savedMember.getId())
                 .email(savedMember.getEmail())
                 .name(savedMember.getName())
@@ -74,11 +83,17 @@ public class AuthService {
                 .build();
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public SignInResponseDto signIn(SignInRequestDto requestDto) {
-        Member member = memberRepository.findByEmail(requestDto.getEmail()).orElseThrow(
+        String normalizedEmail = requestDto.getEmail().toLowerCase();
+
+        Member member = memberRepository.findByEmail(normalizedEmail).orElseThrow(
                 () -> new CustomException(HttpStatus.BAD_REQUEST, "가입되지 않은 유저입니다.")
         );
+
+        if (member.getIsDeleted()) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "탈퇴한 사용자입니다.");
+        }
 
         if (!passwordEncoder.matches(requestDto.getPassword(), member.getPassword())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED, "잘못된 비밀번호입니다.");
@@ -90,22 +105,28 @@ public class AuthService {
                 member.getName(),
                 member.getPhoneNumber(),
                 member.getAddress(),
-                member.getUserRole()
+                member.getUserRole(),
+                member.getProvider()
         );
+
         String refreshToken = jwtUtil.createRefreshToken(
                 member.getId(),
                 member.getEmail(),
                 member.getName(),
                 member.getPhoneNumber(),
                 member.getAddress(),
-                member.getUserRole()
+                member.getUserRole(),
+                member.getProvider()
         );
 
-        refreshTokenRepository.findById(member.getId())
-                .ifPresentOrElse(
-                        existing -> existing.updateToken(refreshToken),
-                        () -> refreshTokenRepository.save(new RefreshToken(member.getId(), refreshToken))
-                );
+        refreshTokenRepository.findById(member.getId()).ifPresentOrElse(existing -> existing.updateToken(refreshToken),
+                () -> refreshTokenRepository.save(
+                        RefreshToken.builder()
+                                .memberId(member.getId())
+                                .token(refreshToken)
+                                .build()
+                )
+        );
 
         return new SignInResponseDto(accessToken, refreshToken);
     }

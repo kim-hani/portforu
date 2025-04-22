@@ -34,12 +34,12 @@ public class ScrapController {
 
     @Member
     @GetMapping("/{memberId}")
-    public ResponseEntity<ApiResponse<List<ScrapDetailResponseDto>>> findScraps(
+    public ResponseEntity<ApiResponse<List<ScrapDetailResponseDto>>> findAllScraps(
             @AuthenticationPrincipal AuthMember authMember,
             @PathVariable("memberId") Long memberId,
             @ModelAttribute Pagecond pagecond
     ) {
-        Page<ScrapDetailResponseDto> responses = scrapService.findScraps(authMember, memberId, pagecond);
+        Page<ScrapDetailResponseDto> responses = scrapService.findAllScraps(authMember, memberId, pagecond);
         PageInfo pageInfo = PageInfo.builder()
                 .pageNum(pagecond.getPageNum())
                 .pageSize(pagecond.getPageSize())

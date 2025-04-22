@@ -20,10 +20,10 @@ public class JobPostingController {
     private final JobPostingService jobPostingService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<JobPostingResponseDto>>> findJobPostings(
+    public ResponseEntity<ApiResponse<List<JobPostingResponseDto>>> findAllJobPostings(
             @ModelAttribute Pagecond pagecond
     ) {
-        Page<JobPostingResponseDto> responses = jobPostingService.findJobPostings(pagecond);
+        Page<JobPostingResponseDto> responses = jobPostingService.findAllJobPostings(pagecond);
         PageInfo pageInfo = PageInfo.builder()
                 .pageNum(pagecond.getPageNum())
                 .pageSize(pagecond.getPageSize())

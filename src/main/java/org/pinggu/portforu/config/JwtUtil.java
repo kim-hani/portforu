@@ -36,7 +36,7 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    public String createToken(Long memberId, String email, String name, String phoneNumber, String address, UserRole userRole) {
+    public String createToken(Long memberId, String email, String name, String phoneNumber, String address, UserRole userRole, String provider) {
         Date date = new Date();
 
         if (memberId == null) {
@@ -53,6 +53,7 @@ public class JwtUtil {
                         .claim("phoneNumber", phoneNumber)
                         .claim("address", address)
                         .claim("userRole", userRole.name())
+                        .claim("provider", provider)
                         .claim("tokenType", "access")
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME))
                         .setIssuedAt(date)
@@ -60,7 +61,7 @@ public class JwtUtil {
                         .compact();
     }
 
-    public String createRefreshToken(Long memberId, String email, String name, String phoneNumber, String address, UserRole userRole) {
+    public String createRefreshToken(Long memberId, String email, String name, String phoneNumber, String address, UserRole userRole, String provider) {
         Date now = new Date();
         log.info("Creating refresh token for memberId: {}", memberId);
 
@@ -72,6 +73,7 @@ public class JwtUtil {
                         .claim("phoneNumber", phoneNumber)
                         .claim("address", address)
                         .claim("userRole", userRole.name())
+                        .claim("provider", provider)
                         .claim("tokenType", "refresh")
                         .setExpiration(new Date(now.getTime() + REFRESH_TOKEN_TIME))
                         .setIssuedAt(now)

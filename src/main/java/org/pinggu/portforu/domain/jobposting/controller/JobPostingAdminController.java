@@ -6,13 +6,12 @@ import org.pinggu.portforu.common.dto.ApiResponse;
 import org.pinggu.portforu.domain.jobposting.dto.request.JobPostingSaveRequestDto;
 import org.pinggu.portforu.domain.jobposting.dto.request.JobPostingUpdateRequestDto;
 import org.pinggu.portforu.domain.jobposting.dto.response.JobPostingResponseDto;
-import org.pinggu.portforu.domain.jobposting.dto.response.JobPostingUpdateResponseDto;
 import org.pinggu.portforu.domain.jobposting.service.JobPostingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/job-postings")
+@RequestMapping("/api/v1/admin/job-postings")
 @RequiredArgsConstructor
 public class JobPostingAdminController {
 
@@ -21,18 +20,20 @@ public class JobPostingAdminController {
     @Admin
     @PostMapping
     public ResponseEntity<ApiResponse<JobPostingResponseDto>> saveJobPosting(
-            @RequestBody JobPostingSaveRequestDto request
+            @RequestBody JobPostingSaveRequestDto requestDto
     ) {
-        return ResponseEntity.ok().body(ApiResponse.of(jobPostingService.saveJobPosting(request)));
+        return ResponseEntity.ok().body(ApiResponse.of(jobPostingService.saveJobPosting(requestDto)));
     }
 
     @Admin
     @PutMapping("/{jobPostingId}")
-    public ResponseEntity<ApiResponse<JobPostingUpdateResponseDto>> updateJobPosting(
+    public ResponseEntity<ApiResponse<String>> updateJobPosting(
             @PathVariable("jobPostingId") Long jobPostingId,
-            @RequestBody JobPostingUpdateRequestDto request
+            @RequestBody JobPostingUpdateRequestDto requestDto
     ) {
-        return ResponseEntity.ok().body(ApiResponse.of(jobPostingService.updateJobPosting(jobPostingId, request)));
+        jobPostingService.updateJobPosting(jobPostingId, requestDto);
+
+        return ResponseEntity.ok().body(ApiResponse.of("채용공고 수정이 완료되었습니다."));
     }
 
     @Admin

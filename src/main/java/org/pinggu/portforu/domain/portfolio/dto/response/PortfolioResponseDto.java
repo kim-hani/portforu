@@ -17,7 +17,7 @@ public class PortfolioResponseDto {
     private final Integer views;
     private final Instant createdAt;
     private final Instant updatedAt;
-    private final Instant deletedAt;
+    private final Boolean isDeleted;
 
     public static PortfolioResponseDto from(Portfolio portfolio) {
         return PortfolioResponseDto.builder()
@@ -29,7 +29,7 @@ public class PortfolioResponseDto {
                 .views(portfolio.getViews())
                 .createdAt(portfolio.getCreatedAt())
                 .updatedAt(portfolio.getUpdatedAt())
-                .deletedAt(portfolio.getDeletedAt())
+                .isDeleted(portfolio.getIsDeleted())
                 .build();
     }
 

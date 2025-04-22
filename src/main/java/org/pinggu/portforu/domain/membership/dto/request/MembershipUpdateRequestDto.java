@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.pinggu.portforu.domain.membership.annotation.YearMinNow;
 
 @Getter
 @AllArgsConstructor
@@ -18,6 +19,7 @@ public class MembershipUpdateRequestDto {
     @Min(value = 1, message = "수량은 0이상이여야 합니다.")
     private Integer quantity;
 
-    @Min(value = 2025, message = "사용년도는 현재년도보다 이상이여야 합니다.")
+    @YearMinNow
     private Integer year;
+
 }

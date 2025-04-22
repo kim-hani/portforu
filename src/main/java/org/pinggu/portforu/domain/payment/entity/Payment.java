@@ -1,23 +1,24 @@
 package org.pinggu.portforu.domain.payment.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.pinggu.portforu.common.domain.BaseEntity;
 import org.pinggu.portforu.domain.payment.enums.PaymentMethod;
 import org.pinggu.portforu.domain.payment.enums.PaymentStatus;
 import org.pinggu.portforu.domain.subscribe.entity.Subscribe;
 
 @Getter
-@NoArgsConstructor
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "payments")
+@SQLDelete(sql = "UPDATE payments SET is_deleted = true WHERE id = ?")
+@Where(clause = "is_deleted = false")
 public class Payment extends BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
@@ -61,12 +62,17 @@ public class Payment extends BaseEntity {
         this.status = PaymentStatus.EXPIRED;
     }
 
-
     public void cancel() {
         if (this.status != PaymentStatus.COMPLETED) {
             throw new IllegalStateException("결제가 완료된 상태에서만 취소할 수 있습니다.");
         }
-        this.status = PaymentStatus.CANCELLED;
+        this.status = PaymentStatus.CANCELED;
     }
 
+    public void assignPaymentMethod(PaymentMethod paymentMethod) {
+        if (this.paymentMethod != null) {
+            throw new IllegalStateException("이미 결제 수단이 설정되어 있습니다.");
+        }
+        this.paymentMethod = paymentMethod;
+    }
 }

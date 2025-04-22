@@ -5,7 +5,7 @@ import org.pinggu.portforu.common.domain.Pagecond;
 import org.pinggu.portforu.common.dto.AuthMember;
 import org.pinggu.portforu.common.exception.CustomException;
 import org.pinggu.portforu.domain.jobposting.entity.JobPosting;
-import org.pinggu.portforu.domain.jobposting.service.JobPostingService;
+import org.pinggu.portforu.domain.jobposting.service.JobPostingFinder;
 import org.pinggu.portforu.domain.scrap.dto.response.ScrapDetailResponseDto;
 import org.pinggu.portforu.domain.scrap.dto.response.ScrapResponseDto;
 import org.pinggu.portforu.domain.scrap.entity.Scrap;
@@ -23,18 +23,18 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ScrapService {
 
-    private final JobPostingService jobPostingService;
+    private final JobPostingFinder jobPostingFinder;
     private final ScrapRepository scrapRepository;
 
     @Transactional
     public ScrapResponseDto toggleScrap(AuthMember authMember, Long jobPostingId) {
         Member member = Member.fromAuthMember(authMember);
-        JobPosting jobPosting = jobPostingService.findJobPostingById(jobPostingId);
+        JobPosting jobPosting = jobPostingFinder.findJobPostingById(jobPostingId);
 
-        Scrap scrap = scrapRepository.findByMemberAndJobPosting(member, jobPosting)
+        Scrap scrap = scrapRepository.findByMemberIdAndJobPostingId(member.getId(), jobPosting.getId())
                 .map(existingScrap -> {
-                    if (existingScrap.getDeletedAt() == null) {
-                        existingScrap.delete();
+                    if (!existingScrap.getIsDeleted()) {
+                        existingScrap.softDelete();
                     } else {
                         existingScrap.restore();
                     }
@@ -54,15 +54,13 @@ public class ScrapService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ScrapDetailResponseDto> findScraps(AuthMember authMember, Long memberId, Pagecond pagecond) {
-        Member member = Member.fromAuthMember(authMember);
-
-        if (!memberId.equals(member.getId())) {
+    public Page<ScrapDetailResponseDto> findAllScraps(AuthMember authMember, Long memberId, Pagecond pagecond) {
+        if (!authMember.getId().equals(memberId)) {
             throw new CustomException(HttpStatus.FORBIDDEN, "다른 회원의 스크랩 목록에 접근할 수 없습니다.");
         }
 
         Pageable pageable = PageRequest.of(pagecond.getPageNum() - 1, pagecond.getPageSize(), Sort.by(Sort.Order.desc("updatedAt")));
-        Page<Scrap> scraps = scrapRepository.findAllByMemberIdAndDeletedAtIsNull(memberId, pageable);
+        Page<Scrap> scraps = scrapRepository.findAllByMemberIdAndIsDeletedFalse(memberId, pageable);
 
         return scraps.map(ScrapDetailResponseDto::from);
     }

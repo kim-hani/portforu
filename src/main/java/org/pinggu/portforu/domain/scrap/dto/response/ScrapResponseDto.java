@@ -14,7 +14,7 @@ public class ScrapResponseDto {
     private final Long memberId;
     private final Long jobPostingId;
     private final Instant createdAt;
-    private final Instant deletedAt;
+    private final Boolean isDeleted;
 
     public static ScrapResponseDto from(Scrap scrap) {
         return ScrapResponseDto.builder()
@@ -22,7 +22,7 @@ public class ScrapResponseDto {
                 .memberId(scrap.getMember().getId())
                 .jobPostingId(scrap.getJobPosting().getId())
                 .createdAt(scrap.getCreatedAt())
-                .deletedAt(scrap.getDeletedAt())
+                .isDeleted(scrap.getIsDeleted())
                 .build();
     }
 

@@ -37,10 +37,9 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .rememberMe(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**", "/oauth2/**", "/login/**", "/error", "/favicon.ico","/pay",
+                        .requestMatchers("/api/v1/auth/**", "/oauth2/**", "/login/**", "/error",
                                 "/pay/**","/api/v1/payments/success",
-                                "/api/v1/payments/fail","/favicon.ico",
-                                "/css/**", "/js/**", "/images/**").permitAll()
+                                "/api/v1/payments/fail").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo

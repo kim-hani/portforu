@@ -3,7 +3,6 @@ package org.pinggu.portforu.domain.portfolio.dto.request;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @AllArgsConstructor
@@ -14,5 +13,6 @@ public class PortfolioUpdateRequestDto {
 
     private String description;
 
-    private MultipartFile imageFile;
+    private String portfolioFileUrl;
+
 }

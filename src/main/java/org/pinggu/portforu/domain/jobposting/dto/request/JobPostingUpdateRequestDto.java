@@ -3,6 +3,8 @@ package org.pinggu.portforu.domain.jobposting.dto.request;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.time.Instant;
+
 @Getter
 @AllArgsConstructor
 public class JobPostingUpdateRequestDto {
@@ -19,6 +21,6 @@ public class JobPostingUpdateRequestDto {
 
     private String preferential;
 
-    private String closingDate;
+    private Instant closingDate;
 
 }

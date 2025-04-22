@@ -6,7 +6,7 @@ import org.pinggu.portforu.domain.member.entity.Member;
 import org.pinggu.portforu.domain.member.repository.MemberRepository;
 import org.pinggu.portforu.domain.subscribe.entity.Subscribe;
 import org.pinggu.portforu.domain.subscribe.repository.SubscribeRepository;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -25,11 +25,11 @@ public class SubscribeValidator {
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "회원 정보를 찾을 수 없습니다."));
 
         List<Subscribe> subscriptions = subscribeRepository
-                .findAllByMemberAndDeletedAtIsNull(member, Pageable.unpaged())
-                .getContent();
+                .findAllByMember(member, Sort.unsorted());
 
         return subscriptions.stream()
                 .filter(sub -> sub.getStartDate().isBefore(Instant.now()))
                 .anyMatch(sub -> sub.getEndDate().isAfter(Instant.now()));
     }
+
 }

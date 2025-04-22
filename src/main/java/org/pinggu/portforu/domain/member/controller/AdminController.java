@@ -23,7 +23,7 @@ public class AdminController {
     @Admin
     @GetMapping("/{memberId}")
     public ResponseEntity<ApiResponse<MemberResponseDto>> findMember(
-            @PathVariable Long memberId
+            @PathVariable("memberId") Long memberId
     ) {
         return ResponseEntity.ok(ApiResponse.of(adminService.findMember(memberId)));
     }
@@ -47,7 +47,7 @@ public class AdminController {
     @Admin
     @DeleteMapping("/{memberId}")
     public ResponseEntity<ApiResponse<Long>> deleteMember(
-            @PathVariable Long memberId
+            @PathVariable("memberId") Long memberId
     ) {
         return ResponseEntity.ok(ApiResponse.of(adminService.deleteMember(memberId)));
     }

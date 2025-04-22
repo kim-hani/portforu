@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/members/{id}")
+@RequestMapping("/api/v1/members")
 public class MemberController {
 
     private final MemberService memberService;
@@ -24,40 +24,40 @@ public class MemberController {
     @Member
     @GetMapping
     public ResponseEntity<ApiResponse<MemberResponseDto>> findMember(
-            @AuthenticationPrincipal AuthMember authMember,
-            @PathVariable Long id
+            @AuthenticationPrincipal AuthMember authMember
     ) {
-        return ResponseEntity.ok().body(ApiResponse.of(memberService.findMember(authMember, id)));
+        return ResponseEntity.ok().body(ApiResponse.of(memberService.findMember(authMember)));
     }
 
     @Member
     @PutMapping
-    public ResponseEntity<ApiResponse<MemberResponseDto>> updateMember(
+    public ResponseEntity<ApiResponse<String>> updateMember(
             @AuthenticationPrincipal AuthMember authMember,
-            @PathVariable Long id,
             @Valid @RequestBody MemberUpdateRequestDto requestDto
     ) {
-        return ResponseEntity.ok().body(ApiResponse.of(memberService.updateMember(authMember, id, requestDto)));
+        memberService.updateMember(authMember, requestDto);
+
+        return ResponseEntity.ok(ApiResponse.of("회원 정보 수정이 완료되었습니다."));
     }
 
     @Member
     @PutMapping("/password")
-    public ResponseEntity<ApiResponse<MemberResponseDto>> updatePassword(
+    public ResponseEntity<ApiResponse<String>> updatePassword(
             @AuthenticationPrincipal AuthMember authMember,
-            @PathVariable Long id,
             @Valid @RequestBody PasswordUpdateRequestDto requestDto
     ) {
-        return ResponseEntity.ok().body(ApiResponse.of(memberService.updatePassword(authMember, id, requestDto)));
+        memberService.updatePassword(authMember, requestDto);
+
+        return ResponseEntity.ok(ApiResponse.of("비밀번호 수정이 완료되었습니다."));
     }
 
     @Member
     @DeleteMapping
     public ResponseEntity<ApiResponse<Long>> deleteMember(
             @AuthenticationPrincipal AuthMember authMember,
-            @PathVariable Long id,
             @Valid @RequestBody MemberDeleteRequestDto requestDto
     ) {
-        return ResponseEntity.ok(ApiResponse.of(memberService.deleteMember(authMember, id, requestDto)));
+        return ResponseEntity.ok(ApiResponse.of(memberService.deleteMember(authMember, requestDto)));
     }
 
 }

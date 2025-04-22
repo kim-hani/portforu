@@ -2,13 +2,17 @@ package org.pinggu.portforu.domain.portfolio.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.pinggu.portforu.common.domain.BaseEntity;
 import org.pinggu.portforu.domain.member.entity.Member;
 
 @Getter
 @Entity
-@Table(name ="portfolios")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name ="portfolios")
+@SQLDelete(sql = "UPDATE portfolios SET is_deleted = true WHERE id = ?")
+@Where(clause = "is_deleted = false")
 public class Portfolio extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -44,4 +48,11 @@ public class Portfolio extends BaseEntity {
         }
     }
 
+    public void update(String newTitle, String newDescription, String newFileUrl) {
+        if (newTitle != null) this.title = newTitle;
+        if (newDescription != null) this.description = newDescription;
+        if (newFileUrl != null) this.fileUrl = newFileUrl;
+    }
+
 }
+

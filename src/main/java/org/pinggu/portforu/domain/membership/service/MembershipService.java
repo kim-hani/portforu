@@ -1,41 +1,30 @@
 package org.pinggu.portforu.domain.membership.service;
 
 import lombok.RequiredArgsConstructor;
-import org.pinggu.portforu.common.domain.Pagecond;
-import org.pinggu.portforu.common.exception.CustomException;
 import org.pinggu.portforu.domain.membership.dto.request.MembershipSaveRequestDto;
 import org.pinggu.portforu.domain.membership.dto.request.MembershipUpdateRequestDto;
 import org.pinggu.portforu.domain.membership.dto.response.MembershipResponseDto;
 import org.pinggu.portforu.domain.membership.entity.Membership;
 import org.pinggu.portforu.domain.membership.repository.MembershipRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class MembershipService {
-    private static final Logger logger = LoggerFactory.getLogger(MembershipService.class);
 
     private final MembershipRepository membershipRepository;
+    private final MembershipFinder membershipFinder;
 
     @Transactional
-    public MembershipResponseDto saveMembership(
-            MembershipSaveRequestDto request
-    ) {
-        logger.info("MembershipService :: saveMembership ~~");
-
+    public MembershipResponseDto saveMembership(MembershipSaveRequestDto requestDto) {
         Membership membership = Membership.builder()
-                .name(request.getName())
-                .price(request.getPrice())
-                .quantity(request.getQuantity())
-                .year(request.getYear())
+                .name(requestDto.getName())
+                .price(requestDto.getPrice())
+                .quantity(requestDto.getQuantity())
+                .year(requestDto.getYear())
                 .build();
 
         Membership savedMembership = membershipRepository.save(membership);
@@ -44,54 +33,31 @@ public class MembershipService {
     }
 
     @Transactional(readOnly = true)
-    public Page<MembershipResponseDto> findAllMemberships(Pagecond pagecond) {
-        Pageable pageable = PageRequest.of(pagecond.getPageNum() - 1, pagecond.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
-
-        return membershipRepository.findAllActiveMemberships(pageable).map(MembershipResponseDto::from);
+    public List<MembershipResponseDto> findAllMemberships() {
+        return membershipRepository.findAllActiveMemberships().stream()
+                .map(MembershipResponseDto::from)
+                .toList();
     }
 
     @Transactional(readOnly = true)
     public MembershipResponseDto findMembershipById(Long membershipId) {
-        Membership membership = membershipRepository.findByIdAndDeletedAtIsNull(membershipId)
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "아이디가 없거나 삭제된 멤버십입니다."));
-
-        return MembershipResponseDto.from(membership);
+        return MembershipResponseDto.from(membershipFinder.findById(membershipId));
     }
 
     @Transactional
-    public MembershipResponseDto updateMembership(
-            Long membershipId,
-            MembershipUpdateRequestDto request
-    ) {
-        Integer updatedRows = membershipRepository.updateMembership(
-                membershipId, request.getName(), request.getPrice(), request.getQuantity(), request.getYear()
-        );
+    public void updateMembership(Long membershipId, MembershipUpdateRequestDto requestDto) {
+        Membership membership = membershipFinder.findById(membershipId);
 
-        if (updatedRows <= 0) {
-            throw new CustomException(HttpStatus.NOT_MODIFIED, "수정 사항이 없습니다.");
-        }
-
-        Membership updatedMembership = membershipRepository.findByIdAndDeletedAtIsNull(membershipId)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "멤버십이 존재하지 않습니다."));
-
-        return MembershipResponseDto.from(updatedMembership);
+        membership.update(requestDto.getName(), requestDto.getPrice(), requestDto.getQuantity(), requestDto.getYear());
     }
 
     @Transactional
     public Long deleteMembership(Long membershipId) {
-        Membership membership = findMembership(membershipId);
+        Membership membership = membershipFinder.findById(membershipId);
 
-        return membership.delete();
+        membershipRepository.delete(membership);
+
+        return membership.getId();
     }
 
-    public Membership findMembership(Long id) {
-        Membership membership = membershipRepository.findById(id)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "멤버십이 존재하지 않습니다."));
-
-        if (membership.isDeleted()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 삭제된 멤버십입니다.");
-        }
-
-        return membership;
-    }
 }

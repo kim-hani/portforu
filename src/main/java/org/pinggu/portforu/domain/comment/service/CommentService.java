@@ -1,16 +1,17 @@
 package org.pinggu.portforu.domain.comment.service;
 
 import lombok.RequiredArgsConstructor;
+import org.pinggu.portforu.common.dto.AuthMember;
 import org.pinggu.portforu.common.exception.CustomException;
 import org.pinggu.portforu.domain.comment.dto.request.CommentRequestDto;
 import org.pinggu.portforu.domain.comment.dto.response.CommentResponseDto;
 import org.pinggu.portforu.domain.comment.entity.Comment;
 import org.pinggu.portforu.domain.comment.repository.CommentRepository;
 import org.pinggu.portforu.domain.member.entity.Member;
-import org.pinggu.portforu.domain.member.repository.MemberRepository;
 import org.pinggu.portforu.domain.portfolio.entity.Portfolio;
-import org.pinggu.portforu.domain.portfolio.repository.PortfolioRepository;
+import org.pinggu.portforu.domain.portfolio.service.PortfolioFinder;
 import org.pinggu.portforu.domain.subscribe.validator.SubscribeValidator;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,26 +23,19 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CommentService {
 
-    private final CommentRepository commentRepository;
-    private final PortfolioRepository portfolioRepository;
-    private final MemberRepository memberRepository;
-
+    private final PortfolioFinder portfolioFinder;
+    private final CommentFinder commentFinder;
     private final SubscribeValidator subscribeValidator;
+    private final CommentRepository commentRepository;
 
     @Transactional
-    public CommentResponseDto saveComment(Long portfolioId, Long memberId, CommentRequestDto requestDto) {
-        Portfolio portfolio = portfolioRepository.findById(portfolioId)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "게시물을 찾을 수 없습니다."));
+    public CommentResponseDto saveComment(AuthMember authMember, Long portfolioId, CommentRequestDto requestDto) {
+        Portfolio portfolio = portfolioFinder.findPortfolioById(portfolioId);
 
-        if (portfolio.isDeleted()) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "삭제된 게시물입니다.");
-        }
+        Member member = Member.fromAuthMember(authMember);
 
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."));
-
-        if (!portfolio.getMember().getId().equals(memberId)) {
-            if (!subscribeValidator.isSubscribed(memberId)) {
+        if (!portfolio.getMember().getId().equals(member.getId())) {
+            if (!subscribeValidator.isSubscribed(member.getId())) {
                 throw new CustomException(HttpStatus.UNAUTHORIZED, "댓글을 작성할 권한이 없습니다.");
             }
         }
@@ -53,75 +47,48 @@ public class CommentService {
                 .build();
 
         Comment savedComment = commentRepository.save(comment);
+
         return CommentResponseDto.from(savedComment);
     }
 
     @Transactional(readOnly = true)
     public List<CommentResponseDto> findAllComments(Long portfolioId) {
-        Portfolio portfolio = portfolioRepository.findById(portfolioId)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "게시물을 찾을 수 없습니다."));
+        portfolioFinder.findPortfolioById(portfolioId);
 
-        if (portfolio.isDeleted()) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "삭제된 게시물입니다.");
-        }
-
-        List<Comment> comments = commentRepository.findByPortfolioId(portfolioId);
+        List<Comment> comments = commentRepository.findByPortfolioId(portfolioId, Sort.by(Sort.Order.desc("id")));
 
         return comments.stream()
-                .filter(comment -> !comment.isDeleted())
+                .filter(comment -> !comment.getIsDeleted())
                 .map(CommentResponseDto::from)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public CommentResponseDto updateComment(Long portfolioId, Long commentId, Long memberId, CommentRequestDto requestDto) {
-        Portfolio portfolio = portfolioRepository.findById(portfolioId)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "게시물을 찾을 수 없습니다."));
+    public void updateComment(AuthMember authMember, Long portfolioId, Long commentId, CommentRequestDto requestDto) {
+        portfolioFinder.findPortfolioById(portfolioId);
 
-        if (portfolio.isDeleted()) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "삭제된 게시물입니다.");
-        }
+        Comment comment = commentFinder.findCommentById(commentId);
 
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."));
-
-        if (comment.isDeleted()) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "삭제된 댓글입니다.");
-        }
-
-        if (!comment.getMember().getId().equals(memberId)) {
+        if (!comment.getMember().getId().equals(authMember.getId())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED, "수정 권한이 없습니다.");
         }
-
-        commentRepository.updateComment(commentId, requestDto.getContent());
-
-        Comment updatedComment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."));
-
-        return CommentResponseDto.from(updatedComment);
+        comment.update(requestDto.getContent());
     }
 
     @Transactional
-    public Long deleteComment(Long portfolioId, Long commentId, Long memberId) {
-        Portfolio portfolio = portfolioRepository.findById(portfolioId)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "게시물을 찾을 수 없습니다."));
+    public Long deleteComment(AuthMember authMember, Long portfolioId, Long commentId) {
+        portfolioFinder.findPortfolioById(portfolioId);
 
-        if (portfolio.isDeleted()) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "삭제된 게시물입니다.");
-        }
+        Comment comment = commentFinder.findCommentById(commentId);
 
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."));
-
-        if (comment.isDeleted()) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "이미 삭제된 댓글입니다.");
-        }
-
-        if (!comment.getMember().getId().equals(memberId)) {
+        if (!comment.getMember().getId().equals(authMember.getId())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED, "삭제 권한이 없습니다.");
         }
 
-        return comment.delete();
+        commentRepository.delete(comment);
+        return comment.getId();
     }
+
 }
+
 

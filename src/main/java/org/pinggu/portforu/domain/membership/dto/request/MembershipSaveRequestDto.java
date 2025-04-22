@@ -1,8 +1,11 @@
 package org.pinggu.portforu.domain.membership.dto.request;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.pinggu.portforu.domain.membership.annotation.YearMinNow;
 
 @Getter
 @AllArgsConstructor
@@ -21,7 +24,7 @@ public class MembershipSaveRequestDto {
     private Integer quantity;
 
     @NotNull(message = "사용년도는 필수입니다.")
-    @Min(value = 2025, message = "사용년도는 현재년도보다 이상이여야 합니다.")
+    @YearMinNow
     private Integer year;
 
 }

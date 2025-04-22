@@ -6,21 +6,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.pinggu.portforu.common.domain.Pagecond;
 import org.pinggu.portforu.common.exception.CustomException;
 import org.pinggu.portforu.domain.membership.dto.request.MembershipSaveRequestDto;
 import org.pinggu.portforu.domain.membership.dto.request.MembershipUpdateRequestDto;
 import org.pinggu.portforu.domain.membership.dto.response.MembershipResponseDto;
 import org.pinggu.portforu.domain.membership.entity.Membership;
 import org.pinggu.portforu.domain.membership.repository.MembershipRepository;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -30,6 +29,9 @@ class MembershipServiceTest {
     @Mock
     private MembershipRepository membershipRepository;
 
+    @Mock
+    private MembershipFinder membershipFinder;
+
     @InjectMocks
     private MembershipService membershipService;
 
@@ -38,19 +40,8 @@ class MembershipServiceTest {
         @Test
         void 맴버십_생성_성공() {
             // given
-            MembershipSaveRequestDto requestDto = new MembershipSaveRequestDto(
-                    "이름",
-                    2000,
-                    10,
-                    2020
-            );
-
-            Membership savedMembership = new Membership(
-                    "이름",
-                    2000,
-                    10,
-                    2020
-            );
+            MembershipSaveRequestDto requestDto = new MembershipSaveRequestDto("이름", 2000, 10, 2020);
+            Membership savedMembership = new Membership("이름", 2000, 10, 2020);
 
             given(membershipRepository.save(any(Membership.class))).willReturn(savedMembership);
 
@@ -68,223 +59,147 @@ class MembershipServiceTest {
     @Test
     void 맴버십_생성_실패() {
         // given
-        MembershipSaveRequestDto requestDto = new MembershipSaveRequestDto(
-                "이름",
-                2000,
-                10,
-                2020
-        );
-
-        // 예외
-        given(membershipRepository.save(any(Membership.class))).willThrow(new RuntimeException("저장 실패"));
+        MembershipSaveRequestDto requestDto = new MembershipSaveRequestDto("이름", 2000, 10, 2020);
+        given(membershipRepository.save(any())).willThrow(new RuntimeException("저장 실패"));
 
         // when, then
-        RuntimeException exception = assertThrows(RuntimeException.class, () ->
+        RuntimeException ex = assertThrows(RuntimeException.class, () ->
                 membershipService.saveMembership(requestDto)
         );
-
-        assertEquals("저장 실패", exception.getMessage());
+        assertEquals("저장 실패", ex.getMessage());
     }
 
+    @Test
     void 모든_맴버십_조회_성공() {
         // given
-        Pagecond pagecond = new Pagecond(1, 10);
-        Pageable pageable = PageRequest.of(pagecond.getPageNum() - 1, pagecond.getPageSize());
-
         List<Membership> memberships = List.of(
-                Membership.builder()
-                        .name("이름1")
-                        .price(2000)
-                        .quantity(10)
-                        .year(2020)
-                        .build(),
-                Membership.builder()
-                        .name("이름2")
-                        .price(3000)
-                        .quantity(5)
-                        .year(2021)
-                        .build()
+                new Membership("이름1", 2000, 10, 2020),
+                new Membership("이름2", 3000, 5, 2021)
         );
 
-        Page<Membership> membershipPage = new PageImpl<>(memberships, pageable, memberships.size());
-
-        given(membershipRepository.findAll(pageable)).willReturn(membershipPage);
+        given(membershipRepository.findAll(Sort.by(Sort.Direction.DESC, "id"))).willReturn(memberships);
 
         // when
-        Page<MembershipResponseDto> response = membershipService.findAllMemberships(pagecond);
+        List<MembershipResponseDto> response = membershipService.findAllMemberships();
 
         // then
-        assertEquals(2, response.getTotalElements());
-        assertEquals("이름1", response.getContent().get(0).getName());
-        assertEquals("이름2", response.getContent().get(1).getName());
+        assertEquals(2, response.size());
+        assertEquals("이름1", response.get(0).getName());
+        assertEquals("이름2", response.get(1).getName());
     }
 
     @Test
     void 모든_맴버십_조회_실패() {
         // given
-        Pagecond pagecond = new Pagecond(1, 10);
-        Pageable pageable = PageRequest.of(pagecond.getPageNum() - 1, pagecond.getPageSize(), Sort.by(Sort.Order.desc("createdAt")));
-
-        // 예외 발생
-        given(membershipRepository.findAll(pageable)).willThrow(new RuntimeException("조회 실패"));
+        given(membershipRepository.findAll(any(Sort.class))).willThrow(new RuntimeException("조회 실패"));
 
         // when, then
-        RuntimeException exception = assertThrows(RuntimeException.class, () ->
-                membershipService.findAllMemberships(pagecond)
+        RuntimeException ex = assertThrows(RuntimeException.class, () ->
+                membershipService.findAllMemberships()
         );
-
-        assertEquals("조회 실패", exception.getMessage());
+        assertEquals("조회 실패", ex.getMessage());
     }
 
     @Test
     void 맴버십_단건_조회_성공() {
         // given
-        Long membershipId = 1L;
+        Long id = 1L;
+        Membership membership = new Membership("이름1", 2000, 10, 2020);
+        setId(membership, id);
 
-        Membership membership = Membership.builder()
-                .name("이름1")
-                .price(2000)
-                .quantity(10)
-                .year(2020)
-                .build();
-
-        try {
-            Field idField = Membership.class.getDeclaredField("id");
-            idField.setAccessible(true);
-            idField.set(membership, membershipId);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-
-        given(membershipRepository.findById(membershipId)).willReturn(Optional.of(membership));
+        given(membershipFinder.findById(id)).willReturn(membership);
 
         // when
-        MembershipResponseDto responseDto = membershipService.findMembershipById(membershipId);
+        MembershipResponseDto response = membershipService.findMembershipById(id);
 
         // then
-        assertEquals(membershipId, responseDto.getId());
-        assertEquals("이름1", responseDto.getName());
-        assertEquals(2000, responseDto.getPrice());
-        assertEquals(10, responseDto.getQuantity());
-        assertEquals(2020, responseDto.getYear());
+        assertEquals("이름1", response.getName());
+        assertEquals(id, response.getId());
     }
 
     @Test
-    void 맴버십_단건_조회_실패_아이디없음() {
+    void 맴버십_단건_조회_실패() {
         // given
-        Long membershipId = 1L;
-
-        // ID로 멤버십을 찾을 수 없을 때 예외
-        given(membershipRepository.findById(membershipId)).willReturn(Optional.empty());
+        Long id = 1L;
+        given(membershipFinder.findById(id)).willThrow(new CustomException(HttpStatus.BAD_REQUEST, "아이디가 없습니다."));
 
         // when, then
-        CustomException exception = assertThrows(CustomException.class, () ->
-                membershipService.findMembershipById(membershipId)
-        );
-
-        assertEquals("아이디가 없습니다.", exception.getMessage());
-        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        CustomException ex = assertThrows(CustomException.class, () -> membershipService.findMembershipById(id));
+        assertEquals("아이디가 없습니다.", ex.getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getStatus());
     }
 
     @Test
     void 맴버십_업데이트_성공() {
         // given
-        Long membershipId = 1L;
-
-        Membership membership = Membership.builder()
-                .name("이름1")
-                .price(2000)
-                .quantity(10)
-                .year(2020)
-                .build();
-
-        try {
-            Field idField = Membership.class.getDeclaredField("id");
-            idField.setAccessible(true);
-            idField.set(membership, membershipId);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        Long id = 1L;
+        Membership membership = new Membership("이름1", 2000, 10, 2020);
+        setId(membership, id);
 
         MembershipUpdateRequestDto request = new MembershipUpdateRequestDto("새로운 이름", 2500, 15, 2021);
 
-        given(membershipRepository.findById(membershipId)).willReturn(Optional.of(membership));
-        given(membershipRepository.save(any(Membership.class))).willReturn(membership);
+        given(membershipFinder.findById(id)).willReturn(membership);
 
         // when
-        MembershipResponseDto responseDto = membershipService.updateMembership(membershipId, request);
+        membershipService.updateMembership(id, request);
 
         // then
-        assertEquals(membershipId, responseDto.getId());
-        assertEquals("새로운 이름", responseDto.getName());
-        assertEquals(2500, responseDto.getPrice());
-        assertEquals(15, responseDto.getQuantity());
-        assertEquals(2021, responseDto.getYear());
+        assertEquals("새로운 이름", membership.getName());
+        assertEquals(2500, membership.getPrice());
+        assertEquals(15, membership.getQuantity());
+        assertEquals(2021, membership.getYear());
     }
 
     @Test
-    void 맴버십_업데이트_실패_아이디없음() {
+    void 맴버십_업데이트_실패() {
         // given
-        Long membershipId = 1L;
+        Long id = 1L;
         MembershipUpdateRequestDto request = new MembershipUpdateRequestDto("새로운 이름", 2500, 15, 2021);
 
-        // ID로 멤버십을 찾을 수 없을 때 예외
-        given(membershipRepository.findById(membershipId)).willReturn(Optional.empty());
+        given(membershipFinder.findById(id)).willThrow(new CustomException(HttpStatus.BAD_REQUEST, "아이디가 없습니다."));
 
         // when, then
-        CustomException exception = assertThrows(CustomException.class, () ->
-                membershipService.updateMembership(membershipId, request)
-        );
-
-        assertEquals("아이디가 없습니다.", exception.getMessage());
-        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        CustomException ex = assertThrows(CustomException.class, () -> membershipService.updateMembership(id, request));
+        assertEquals("아이디가 없습니다.", ex.getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getStatus());
     }
 
     @Test
     void 맴버십_삭제_성공() {
         // given
-        Long membershipId = 1L;
+        Long id = 1L;
+        Membership membership = new Membership("이름1", 2000, 10, 2020);
+        setId(membership, id);
 
-        Membership membership = Membership.builder()
-                .name("이름1")
-                .price(2000)
-                .quantity(10)
-                .year(2020)
-                .build();
-
-        try {
-            Field idField = Membership.class.getDeclaredField("id");
-            idField.setAccessible(true);
-            idField.set(membership, membershipId);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-
-        given(membershipRepository.findById(membershipId)).willReturn(Optional.of(membership));
-        given(membershipRepository.save(any(Membership.class))).willReturn(membership);
+        given(membershipFinder.findById(id)).willReturn(membership);
 
         // when
-        MembershipResponseDto responseDto = membershipService.deleteMembership(membershipId);
+        Long deletedId = membershipService.deleteMembership(id);
 
         // then
-        assertEquals(membershipId, responseDto.getId());
-        assertNotNull(responseDto.getDeletedAt());
+        assertEquals(id, deletedId);
     }
 
     @Test
-    void 맴버십_삭제_실패_아이디없음() {
+    void 맴버십_삭제_실패() {
         // given
-        Long membershipId = 1L;
-
-        // ID로 멤버십을 찾을 수 없을 때 예외
-        given(membershipRepository.findById(membershipId)).willReturn(Optional.empty());
+        Long id = 1L;
+        given(membershipFinder.findById(id)).willThrow(new CustomException(HttpStatus.BAD_REQUEST, "아이디가 없습니다."));
 
         // when, then
-        CustomException exception = assertThrows(CustomException.class, () ->
-                membershipService.deleteMembership(membershipId)
-        );
+        CustomException ex = assertThrows(CustomException.class, () -> membershipService.deleteMembership(id));
+        assertEquals("아이디가 없습니다.", ex.getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getStatus());
+    }
 
-        assertEquals("아이디가 없습니다.", exception.getMessage());
-        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    // 리플렉션 유틸 메서드
+    private void setId(Membership membership, Long id) {
+        try {
+            Field idField = Membership.class.getDeclaredField("id");
+            idField.setAccessible(true);
+            idField.set(membership, id);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

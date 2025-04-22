@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.pinggu.portforu.common.domain.RefreshToken;
 import org.pinggu.portforu.config.JwtUtil;
+import org.pinggu.portforu.domain.auth.repository.RefreshTokenRepository;
 import org.pinggu.portforu.domain.member.entity.Member;
 import org.pinggu.portforu.domain.oauth.user.CustomOAuth2User;
 import org.springframework.security.core.Authentication;
@@ -21,6 +23,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -34,7 +37,8 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
                 member.getName(),
                 member.getPhoneNumber(),
                 member.getAddress(),
-                member.getUserRole()
+                member.getUserRole(),
+                member.getProvider()
         );
 
         String refreshToken = jwtUtil.createRefreshToken(
@@ -43,7 +47,17 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
                 member.getName(),
                 member.getPhoneNumber(),
                 member.getAddress(),
-                member.getUserRole()
+                member.getUserRole(),
+                member.getProvider()
+        );
+
+        refreshTokenRepository.findById(member.getId()).ifPresentOrElse(existing -> existing.updateToken(refreshToken),
+                () -> refreshTokenRepository.save(
+                        RefreshToken.builder()
+                                .memberId(member.getId())
+                                .token(refreshToken)
+                                .build()
+                )
         );
 
         // 응답 설정

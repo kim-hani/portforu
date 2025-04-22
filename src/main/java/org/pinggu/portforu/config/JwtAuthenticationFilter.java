@@ -86,8 +86,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String phoneNumber = claims.get("phoneNumber", String.class);
         String address = claims.get("address", String.class);
         UserRole userRole = UserRole.of(claims.get("userRole", String.class));
+        String provider = claims.get("provider", String.class);
 
-        AuthMember authMember = new AuthMember(memberId, email, name, phoneNumber, address, userRole);
+        AuthMember authMember = new AuthMember(memberId, email, name, phoneNumber, address, userRole, provider);
         JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(authMember);
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
