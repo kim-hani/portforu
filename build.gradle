@@ -24,6 +24,11 @@ repositories {
 }
 
 dependencies {
+    //redis 의존성
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    //분산락사용을 하기위해
+    implementation 'org.redisson:redisson-spring-boot-starter:3.23.5'
+
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
     implementation 'org.springframework.boot:spring-boot-starter-web'
