@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.pinggu.portforu.common.dto.AuthMember;
 import org.pinggu.portforu.common.exception.CustomException;
+import org.pinggu.portforu.common.lock.RedisLockExecutor;
 import org.pinggu.portforu.domain.member.entity.Member;
 import org.pinggu.portforu.domain.membership.entity.Membership;
 import org.pinggu.portforu.domain.membership.repository.MembershipRepository;
@@ -37,7 +38,7 @@ public class SubscribeService {
     private final MembershipRepository membershipRepository;
     private final PaymentRepository paymentRepository;
     private final PaymentExpireScheduler paymentExpireScheduler;
-
+    private final RedisLockExecutor redisLockExecutor;
     // 구독 생성
     @Transactional
     public SubscribeResponseDto saveSubscribe(AuthMember authMember, Long membershipId) {
