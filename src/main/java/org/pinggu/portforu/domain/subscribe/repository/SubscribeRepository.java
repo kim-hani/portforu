@@ -38,5 +38,4 @@ public interface SubscribeRepository extends JpaRepository<Subscribe, Long> {
                                 @Param("toStatus") SubscribeStatus toStatus,
                                 @Param("now") Instant now);
 
-
 }

@@ -9,23 +9,23 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-
+// 책임 분리를 위해
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class SubscribeScheduler {
+public class CanceledSubscribeScheduler {
 
     private final SubscribeRepository subscribeRepository;
 
-    @Scheduled(cron = "0 0 3 * * *")
+    @Scheduled(cron = "0 0 3 * * *") // 새벽 3시
     @Transactional
-    public void expireEndedSubscriptions() {
+    public void expireCanceledSubscriptions() {
         Instant now = Instant.now();
 
         int updatedCount = subscribeRepository.bulkExpireSubscriptions(
-                SubscribeStatus.ACTIVE, SubscribeStatus.EXPIRED, now
+                SubscribeStatus.CANCELED, SubscribeStatus.EXPIRED, now
         );
 
-        log.info("만료된 구독 처리 완료 (벌크 업데이트): count={}", updatedCount);
+        log.info("취소된 구독 중 만료된 것 처리 완료: count={}", updatedCount);
     }
 }
