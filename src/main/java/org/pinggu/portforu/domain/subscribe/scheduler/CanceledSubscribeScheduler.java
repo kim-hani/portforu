@@ -2,13 +2,18 @@ package org.pinggu.portforu.domain.subscribe.scheduler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.pinggu.portforu.common.lock.RedisLockExecutor;
+import org.pinggu.portforu.domain.subscribe.entity.Subscribe;
 import org.pinggu.portforu.domain.subscribe.enums.SubscribeStatus;
 import org.pinggu.portforu.domain.subscribe.repository.SubscribeRepository;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.List;
+
 // 책임 분리를 위해
 @Slf4j
 @Component
@@ -16,16 +21,35 @@ import java.time.Instant;
 public class CanceledSubscribeScheduler {
 
     private final SubscribeRepository subscribeRepository;
+    private final RedisLockExecutor redisLockExecutor;
+    private final JdbcTemplate jdbcTemplate;
 
-    @Scheduled(cron = "0 0 3 * * *") // 새벽 3시
+    @Scheduled(cron = "0 0 3 * * *")
     @Transactional
     public void expireCanceledSubscriptions() {
         Instant now = Instant.now();
 
-        int updatedCount = subscribeRepository.bulkExpireSubscriptions(
-                SubscribeStatus.CANCELED, SubscribeStatus.EXPIRED, now
-        );
+        List<Subscribe> canceledSubs = subscribeRepository
+                .findAllByStatusAndEndDateBefore(SubscribeStatus.CANCELED, now);
 
-        log.info("취소된 구독 중 만료된 것 처리 완료: count={}", updatedCount);
+        canceledSubs.forEach(sub -> {
+            Long subscribeId = sub.getId();
+
+            redisLockExecutor.executeWithLock("lock:subscribe:" + subscribeId, 5, 3, () -> {
+                sub.expire(); // CANCELED → EXPIRED
+
+                // JDBC로 quantity 증가
+                String sql = """
+                    UPDATE memberships
+                    SET quantity = quantity + 1
+                    WHERE id = (
+                        SELECT membership_id FROM subscribes WHERE id = ?
+                    )
+                """;
+                jdbcTemplate.update(sql, subscribeId);
+            });
+        });
+
+        log.info("만료된 CANCELED 구독 처리 및 정원 복구 완료: count={}", canceledSubs.size());
     }
 }

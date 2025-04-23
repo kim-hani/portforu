@@ -91,8 +91,6 @@ public class SubscribeService {
         return response[0];
     }
 
-
-
     // 구독 조회
     @Transactional(readOnly = true)
     public List<SubscribeResponseDto> findAllSubscribes(AuthMember authMember) {
@@ -107,7 +105,6 @@ public class SubscribeService {
                 })
                 .collect(Collectors.toList());
     }
-
 
     // 구독 취소
     @Transactional
@@ -146,10 +143,8 @@ public class SubscribeService {
                 subscribe.fail();
                 log.info("구독 실패 처리됨: subscribeId={}, 상태={}", subscribeId, subscribe.getStatus());
             } else if (paymentStatus == PaymentStatus.EXPIRED) {
-                subscribe.expire();
-                membership.increaseQuantity(); // 락 안에서 증가
-                membershipRepository.save(membership);
-                log.info("구독 만료 처리됨: subscribeId={}, 상태={}", subscribeId, subscribe.getStatus());
+                subscribe.fail();
+                log.info("결제 만료로 인한 구독 실패 처리됨: subscribeId={}, 상태={}", subscribeId, subscribe.getStatus());
             }
         });
     }
