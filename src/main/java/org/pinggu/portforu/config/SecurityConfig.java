@@ -38,8 +38,7 @@ public class SecurityConfig {
                 .rememberMe(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**", "/oauth2/**", "/login/**", "/error",
-                                "/pay/**","/api/v1/payments/success",
-                                "/api/v1/payments/fail").permitAll()
+                                "/pay/**","/api/v1/payments/**","/payments/**").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo
