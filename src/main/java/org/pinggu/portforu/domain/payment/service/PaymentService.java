@@ -3,6 +3,7 @@ package org.pinggu.portforu.domain.payment.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.pinggu.portforu.common.exception.CustomException;
+import org.pinggu.portforu.common.lock.RedisLockExecutor;
 import org.pinggu.portforu.domain.membership.entity.Membership;
 import org.pinggu.portforu.domain.payment.dto.response.TossPaymentConfirmResponseDto;
 import org.pinggu.portforu.domain.payment.entity.Payment;
@@ -32,80 +33,86 @@ public class PaymentService {
     private final PaymentFinder paymentFinder;
     private final SubscribeService subscribeService;
     private final SubscribeRepository subscribeRepository;
+    private final RedisLockExecutor redisLockExecutor;
 
     @Value("${toss.test-secret-key}")
     private String secretKey;
 
     public void handleSuccessPayment(String paymentKey, String orderId, Long amount) {
         Long subscribeId = parseSubscribeId(orderId);
-        try {
-            Payment payment = paymentFinder.findBySubscribeId(subscribeId);
+        String lockKey = "lock:subscribe:" + subscribeId;
 
-            if (payment.getStatus() == PaymentStatus.COMPLETED) {
-                //TODO 이건 동시성 어떻게 할건지, 서드파티 이용하는 거기 때문에 문제가 생길 여지가 있음
-                // -redis 도입해서 분산 lock처리를 해주면 괜찮을거같아서 이렇게 해둿는데 고치고 redis를 넣고 할까요?
-                log.info("중복 결제 요청 차단됨: orderId={}, subscribeId={}", orderId, subscribeId);
-                throw new CustomException(HttpStatus.BAD_REQUEST, "이미 결제가 완료된 주문입니다.");
-            }
+        redisLockExecutor.executeWithLock(lockKey, 5, 3, () -> {
+            try {
+                Payment payment = paymentFinder.findBySubscribeId(subscribeId);
 
-            Subscribe subscribe = payment.getSubscribe();
-            Membership membership = subscribe.getMembership();
-
-            //  정원 수량으로 체크 (count 방식 제거) 동시성문제는 나중에 redis 사용할예정
-            if (membership.getQuantity() <= 0) {
-                try {
-                    cancelTossPayment(paymentKey, "멤버십 정원이 초과되어 결제가 취소되었습니다.");
-                } catch (Exception e) {
-                    log.warn("Toss 결제 취소 실패: {}", e.getMessage());
+                if (payment.getStatus() == PaymentStatus.COMPLETED) {
+                    log.info("중복 결제 요청 차단됨: orderId={}, subscribeId={}", orderId, subscribeId);
+                    throw new CustomException(HttpStatus.BAD_REQUEST, "이미 결제가 완료된 주문입니다.");
                 }
+
+                Subscribe subscribe = payment.getSubscribe();
+                Membership membership = subscribe.getMembership();
+
+                if (membership.getQuantity() <= 0) {
+                    try {
+                        cancelTossPayment(paymentKey, "멤버십 정원이 초과되어 결제가 취소되었습니다.");
+                    } catch (Exception e) {
+                        log.warn("Toss 결제 취소 실패: {}", e.getMessage());
+                    }
+
+                    payment.fail();
+                    subscribe.fail();
+                    paymentRepository.save(payment);
+                    subscribeRepository.save(subscribe);
+
+                    log.warn("결제 실패 - 정원 초과: orderId={}, subscribeId={}", orderId, subscribeId);
+                    throw new CustomException(HttpStatus.BAD_REQUEST, "멤버십 정원이 초과되어 결제가 취소되었습니다.");
+                }
+
+                // Toss 결제 승인 요청
+                String url = "https://api.tosspayments.com/v1/payments/confirm";
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+                headers.set("Authorization", "Basic " + Base64.getEncoder()
+                        .encodeToString((secretKey + ":").getBytes()));
+
+                Map<String, Object> body = new HashMap<>();
+                body.put("paymentKey", paymentKey);
+                body.put("orderId", orderId);
+                body.put("amount", amount);
+
+                HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+                ResponseEntity<TossPaymentConfirmResponseDto> response = restTemplate
+                        .postForEntity(url, request, TossPaymentConfirmResponseDto.class);
+
+                String method = response.getBody() != null ? response.getBody().getMethod() : null;
+                log.info("Toss에서 받은 결제 수단: {}", method);
+                PaymentMethod paymentMethod = PaymentMethod.fromTossMethod(method);
+
+                payment.assignPaymentKey(paymentKey);
+                payment.assignPaymentMethod(paymentMethod);
+                payment.complete();
+
+                subscribeService.updateSubscriptionStatus(subscribeId, PaymentStatus.COMPLETED);
+
+                log.info("결제 완료: orderId={}, subscribeId={}, amount={}", orderId, subscribeId, amount);
+
+            } catch (HttpClientErrorException e) {
+                // 락 안에서 실패 처리
+                Payment payment = paymentFinder.findBySubscribeId(subscribeId);
+                Subscribe subscribe = payment.getSubscribe();
 
                 payment.fail();
                 subscribe.fail();
                 paymentRepository.save(payment);
                 subscribeRepository.save(subscribe);
 
-                log.warn("결제 실패 - 정원 초과: orderId={}, subscribeId={}", orderId, subscribeId);
-                throw new CustomException(HttpStatus.BAD_REQUEST, "멤버십 정원이 초과되어 결제가 취소되었습니다.");
+                log.warn("Toss 결제 승인 실패: orderId={}, subscribeId={}, error={}", orderId, subscribeId, e.getMessage());
+
+                throw new CustomException(HttpStatus.BAD_REQUEST, "Toss 결제 승인 실패: " + e.getMessage());
             }
-
-            // Toss 결제 승인 요청
-            String url = "https://api.tosspayments.com/v1/payments/confirm";
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("Authorization", "Basic " + Base64.getEncoder()
-                    .encodeToString((secretKey + ":").getBytes()));
-
-            Map<String, Object> body = new HashMap<>();
-            body.put("paymentKey", paymentKey);
-            body.put("orderId", orderId);
-            body.put("amount", amount);
-
-            HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
-            ResponseEntity<TossPaymentConfirmResponseDto> response = restTemplate
-                    .postForEntity(url, request, TossPaymentConfirmResponseDto.class);
-
-            String method = response.getBody() != null ? response.getBody().getMethod() : null;
-            log.info("Toss에서 받은 결제 수단: {}", method);
-            PaymentMethod paymentMethod = PaymentMethod.fromTossMethod(method);
-
-            payment.assignPaymentKey(paymentKey);
-            payment.assignPaymentMethod(paymentMethod);
-            payment.complete();
-
-            subscribeService.updateSubscriptionStatus(subscribeId, PaymentStatus.COMPLETED);
-
-            log.info("결제 완료: orderId={}, subscribeId={}, amount={}", orderId, subscribeId, amount);
-
-        } catch (HttpClientErrorException e) {
-            Subscribe subscribe = subscribeRepository.findById(subscribeId)
-                    .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "구독 정보를 찾을 수 없습니다."));
-            subscribe.fail();
-            subscribeRepository.save(subscribe);
-
-            log.warn("Toss 결제 승인 실패: orderId={}, subscribeId={}, error={}", orderId, subscribeId, e.getMessage());
-
-            throw new CustomException(HttpStatus.BAD_REQUEST, "Toss 결제 승인 실패: " + e.getMessage());
-        }
+        });
     }
 
     public void handleFailPayment(String orderId, String message) {

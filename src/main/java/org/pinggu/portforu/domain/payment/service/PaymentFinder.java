@@ -20,7 +20,7 @@ public class PaymentFinder {
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "결제 정보가 없습니다."));
     }
 
-    public void existsPayment (
+    public void existsPendingPayment (
             Member member, Long membershipId, PaymentStatus paymentStatus
     ) {
         if (paymentRepository.existsPayment(

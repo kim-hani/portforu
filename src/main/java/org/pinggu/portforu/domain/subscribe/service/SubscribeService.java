@@ -46,7 +46,7 @@ public class SubscribeService {
         Member member = Member.fromAuthMember(authMember);
         Membership membership = membershipFinder.findById(membershipId);
 
-        paymentFinder.existsPayment(member, membershipId, PaymentStatus.PENDING);
+        paymentFinder.existsPendingPayment(member, membershipId, PaymentStatus.PENDING);
         subscribeFinder.hasValidSubscription(member, membershipId);
 
         String lockKey = "lock:membership:" + membershipId;
