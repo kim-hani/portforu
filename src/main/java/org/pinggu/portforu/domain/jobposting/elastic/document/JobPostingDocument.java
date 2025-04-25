@@ -8,8 +8,6 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import java.time.Instant;
 
 @Document(indexName = "job_postings")
-@Getter
-@AllArgsConstructor
 @Builder
 public class JobPostingDocument {
 
