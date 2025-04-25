@@ -5,8 +5,6 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class TossPaymentConfirmResponseDto {
-    private String method;
-    private TossEasyPay easyPay;
-
+public class TossEasyPay {
+    private String provider;
 }

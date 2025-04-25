@@ -21,6 +21,7 @@ import org.pinggu.portforu.domain.subscribe.entity.Subscribe;
 public class Payment extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "payment_method", length = 30)
     private PaymentMethod paymentMethod;
 
     @Enumerated(EnumType.STRING)

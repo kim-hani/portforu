@@ -1,5 +1,6 @@
 package org.pinggu.portforu.domain.payment.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.pinggu.portforu.common.exception.CustomException;
@@ -77,18 +78,31 @@ public class PaymentService {
                 headers.set("Authorization", "Basic " + Base64.getEncoder()
                         .encodeToString((secretKey + ":").getBytes()));
 
-                Map<String, Object> body = new HashMap<>();
-                body.put("paymentKey", paymentKey);
-                body.put("orderId", orderId);
-                body.put("amount", amount);
+                Map<String, Object> requestBody = new HashMap<>();
+                requestBody.put("paymentKey", paymentKey);
+                requestBody.put("orderId", orderId);
+                requestBody.put("amount", amount);
 
-                HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+                HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
                 ResponseEntity<TossPaymentConfirmResponseDto> response = restTemplate
                         .postForEntity(url, request, TossPaymentConfirmResponseDto.class);
 
-                String method = response.getBody() != null ? response.getBody().getMethod() : null;
-                log.info("Toss에서 받은 결제 수단: {}", method);
-                PaymentMethod paymentMethod = PaymentMethod.fromTossMethod(method);
+                TossPaymentConfirmResponseDto responseBody = response.getBody();
+
+                try {
+                    log.info("결제 응답 전체: {}", new ObjectMapper().writeValueAsString(responseBody));
+                } catch (Exception e) {
+                    log.warn("결제 응답 로깅 중 JSON 직렬화 실패", e);
+                };
+
+                String method = responseBody != null ? responseBody.getMethod() : null;
+                String provider = responseBody != null && responseBody.getEasyPay() != null
+                        ? responseBody.getEasyPay().getProvider()
+                        : null;
+
+                log.info("Toss에서 받은 결제 수단: method={}, provider={}", method, provider);
+                PaymentMethod paymentMethod = PaymentMethod.fromTossMethod(method, provider);
+
 
                 payment.assignPaymentKey(paymentKey);
                 payment.assignPaymentMethod(paymentMethod);
