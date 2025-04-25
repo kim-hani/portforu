@@ -19,6 +19,7 @@ public class SubscribeController {
 
     private final SubscribeService subscribeService;
 
+    // 구독 생성
     @Member
     @PostMapping("/{membershipId}")
     public ResponseEntity<ApiResponse<SubscribeResponseDto>> saveSubscribe(
@@ -28,6 +29,7 @@ public class SubscribeController {
         return ResponseEntity.ok(ApiResponse.of(subscribeService.saveSubscribe(authmember, membershipId)));
     }
 
+    // 내 구독 목록 조회
     @Member
     @GetMapping
     public ResponseEntity<ApiResponse<List<SubscribeResponseDto>>> findAllSubscribes(
@@ -38,6 +40,7 @@ public class SubscribeController {
         return ResponseEntity.ok(ApiResponse.of(responses));
     }
 
+    // 구독 취소
     @Member
     @DeleteMapping("/{subscribeId}")
     public ResponseEntity<ApiResponse<Long>> deleteSubscribe(
