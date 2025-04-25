@@ -11,6 +11,18 @@ services:
     networks:
       - elastic
 
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.10
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - elastic
+
   filebeat:
     image: docker.elastic.co/beats/filebeat:7.17.10
     container_name: filebeat
