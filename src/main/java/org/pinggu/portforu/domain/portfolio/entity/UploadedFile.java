@@ -1,9 +1,6 @@
 package org.pinggu.portforu.domain.portfolio.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +10,12 @@ import java.time.Instant;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(
+        name = "uploaded_files",
+        indexes = {
+                @Index(name = "idx_uploaded_file_url", columnList = "fileUrl", unique = true)
+        }
+)
 public class UploadedFile {
 
     @Id

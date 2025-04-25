@@ -17,7 +17,14 @@ import java.time.Instant;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "subscribes")
+@Table(
+        name = "subscribes",
+        indexes = {
+                @Index(name = "idx_subscribe_member_membership", columnList =
+                        "member_id, membership_id"),
+                @Index(name = "idx_subscribe_status_end_date", columnList = "status, end_date")
+        }
+)
 @SQLDelete(sql = "UPDATE subscribes  SET is_deleted = true WHERE id = ?")
 @Where(clause = "is_deleted = false")
 public class Subscribe extends BaseEntity {
