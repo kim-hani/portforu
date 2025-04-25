@@ -21,7 +21,6 @@ logging:
     org.hibernate.SQL: debug
     org.springframework.security: debug
 
-
 security:
   oauth2:
     client:
