@@ -27,6 +27,7 @@ public class JobPostingService {
 
     @Transactional
     public JobPostingResponseDto saveJobPosting(JobPostingSaveRequestDto requestDto) {
+        System.out.println("저장되고있습니다");
         JobPosting jobPosting = JobPosting.builder()
                 .title(requestDto.getTitle())
                 .company(requestDto.getCompany())

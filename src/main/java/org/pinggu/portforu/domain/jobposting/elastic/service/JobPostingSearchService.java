@@ -10,4 +10,3 @@ public interface JobPostingSearchService {
     void deleteById(String id);
     List<JobPostingDocument> search(String keyword);
 }
-
