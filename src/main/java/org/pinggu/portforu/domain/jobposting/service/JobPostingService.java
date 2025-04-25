@@ -24,17 +24,26 @@ public class JobPostingService {
     @Transactional
     public JobPostingResponseDto saveJobPosting(JobPostingSaveRequestDto requestDto) {
         JobPosting jobPosting = JobPosting.builder()
-                .name(requestDto.getName())
-                .industry(requestDto.getIndustry())
-                .address(requestDto.getAddress())
+                .title(requestDto.getTitle())
+                .company(requestDto.getCompany())
+                .location(requestDto.getLocation())
+                .link(requestDto.getLink())
                 .salary(requestDto.getSalary())
-                .qualifications(requestDto.getQualifications())
-                .preferential(requestDto.getPreferential())
-                .postingDate(requestDto.getPostingDate())
-                .closingDate(requestDto.getClosingDate())
+                .duty(requestDto.getDuty())
+                .employmentType(requestDto.getEmploymentType())
+                .educationLevel(requestDto.getEducationLevel())
+                .experienceYears(requestDto.getExperienceYears())
+                .keyAbilities(requestDto.getKeyAbilities())
+                .minExperienceYears(requestDto.getMinExperienceYears())
+                .maxExperienceYears(requestDto.getMaxExperienceYears())
+                .hiringStartAt(requestDto.getHiringStartAt())
+                .hiringEndAt(requestDto.getHiringEndAt())
+                .skills(requestDto.getSkills())
                 .build();
 
-        jobPostingRepository.save(jobPosting);
+        if(jobPostingRepository.findByLink(jobPosting.getLink()).isEmpty()) {
+            jobPostingRepository.save(jobPosting);
+        }
 
         return JobPostingResponseDto.from(jobPosting);
     }
@@ -58,8 +67,11 @@ public class JobPostingService {
     public void updateJobPosting(Long jobPostingId, JobPostingUpdateRequestDto requestDto) {
         JobPosting jobPosting = jobPostingFinder.findJobPostingById(jobPostingId);
 
-        jobPosting.update(requestDto.getName(), requestDto.getIndustry(), requestDto.getAddress(), requestDto.getSalary(),
-                requestDto.getQualifications(), requestDto.getPreferential(), requestDto.getClosingDate());
+        jobPosting.update(requestDto.getTitle(), requestDto.getCompany(), requestDto.getLocation(),
+                requestDto.getSalary(), requestDto.getDuty(), requestDto.getEmploymentType(),
+                requestDto.getEducationLevel(), requestDto.getExperienceYears(), requestDto.getKeyAbilities(),
+                requestDto.getMinExperienceYears(), requestDto.getMaxExperienceYears(),
+                requestDto.getClosingDate(), requestDto.getSkills());
     }
 
     @Transactional

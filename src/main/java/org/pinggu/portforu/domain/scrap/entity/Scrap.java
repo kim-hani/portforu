@@ -22,7 +22,7 @@ public class Scrap extends BaseEntity {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "jobposting_id", nullable = false)
+    @JoinColumn(name = "job_posting_id", nullable = false)
     private JobPosting jobPosting;
 
     @Builder
