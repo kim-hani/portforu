@@ -10,6 +10,7 @@ import org.hibernate.annotations.Where;
 import org.pinggu.portforu.common.domain.BaseEntity;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
 
 @Getter
 @Entity
@@ -19,44 +20,105 @@ import java.time.Instant;
 @Where(clause = "is_deleted = false")
 public class JobPosting extends BaseEntity {
 
-    private String name;
+    @Column(nullable = false)
+    private String title;
 
-    private String industry;
+    @Column(nullable = false)
+    private String company;
 
-    private String address;
+    @Column(nullable = false)
+    private String location;
 
+    @Column(nullable = false, unique = true)
+    private String link;
+
+    @Column(nullable = false)
     private String salary;
 
-    private String qualifications;
+    @Column(nullable = false)
+    private String duty;
 
-    private String preferential;
+    @Column(nullable = false)
+    private String employmentType;
 
-    private Instant postingDate;
+    @Column(nullable = false)
+    private String educationLevel;
 
-    private Instant closingDate;
+    @Column(nullable = false)
+    private String experienceYears;
+
+    @Column(nullable = false)
+    private String keyAbilities;
+
+    @Column
+    private Integer minExperienceYears;
+
+    @Column
+    private Integer maxExperienceYears;
+
+    @Column
+    private ZonedDateTime hiringStartAt;
+
+    @Column
+    private ZonedDateTime hiringEndAt;
+
+    @Column
+    private String skills;
 
     @Builder
-    public JobPosting(String name, String industry, String address, String salary, String qualifications,
-                      String preferential, Instant postingDate, Instant closingDate) {
-        this.name = name;
-        this.industry = industry;
-        this.address = address;
-        this.salary = salary;
-        this.qualifications = qualifications;
-        this.preferential = preferential;
-        this.postingDate = postingDate;
-        this.closingDate = closingDate;
+    public JobPosting(String title, String company, String location, String link,
+                      String salary, String duty, String employmentType,
+                      String educationLevel, String experienceYears, String keyAbilities,
+                      Integer minExperienceYears, Integer maxExperienceYears,
+                      ZonedDateTime hiringStartAt, ZonedDateTime hiringEndAt,
+                      String skills) {
+        this.title             = title;
+        this.company           = company;
+        this.location          = location;
+        this.link              = link;
+        this.salary            = salary;
+        this.duty              = duty;
+        this.employmentType    = employmentType;
+        this.educationLevel    = educationLevel;
+        this.experienceYears   = experienceYears;
+        this.keyAbilities      = keyAbilities;
+        this.minExperienceYears= minExperienceYears;
+        this.maxExperienceYears= maxExperienceYears;
+        this.hiringStartAt     = hiringStartAt;
+        this.hiringEndAt       = hiringEndAt;
+        this.skills            = skills;
     }
 
-    public void update(String name, String industry, String address, String salary, String qualifications,
-                       String preferential, Instant closingDate) {
-        if (name != null) this.name = name;
-        if (industry != null) this.industry = industry;
-        if (address != null) this.address = address;
-        if (salary != null) this.salary = salary;
-        if (qualifications != null) this.qualifications = qualifications;
-        if (preferential != null) this.preferential = preferential;
-        if (closingDate != null) this.closingDate = closingDate;
+    public void update(String title, String company, String location,
+                       String salary, String duty, String employmentType,
+                       String educationLevel, String experienceYears, String keyAbilities,
+                       Integer minExperienceYears, Integer maxExperienceYears,
+                       ZonedDateTime closingDate, String skills) {
+        if (title != null)
+            this.title = title;
+        if (company != null)
+            this.company = company;
+        if (location != null)
+            this.location = location;
+        if (salary != null)
+            this.salary = salary;
+        if (duty != null)
+            this.duty = duty;
+        if (employmentType != null)
+            this.employmentType = employmentType;
+        if (educationLevel != null)
+            this.educationLevel = educationLevel;
+        if (experienceYears != null)
+            this.experienceYears = experienceYears;
+        if (keyAbilities != null)
+            this.keyAbilities = keyAbilities;
+        if (minExperienceYears != null)
+            this.minExperienceYears = minExperienceYears;
+        if (maxExperienceYears != null)
+            this.maxExperienceYears = maxExperienceYears;
+        if (closingDate != null)
+            this.hiringEndAt = closingDate;
+        if (skills != null)
+            this.skills = skills;
     }
-
 }

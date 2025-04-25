@@ -1,14 +1,12 @@
-name: CI/CD for PortForU
+name: CI/CD for PortForU (ECR + EB)
 
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: [ "dev" ]
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
 
     steps:
       - name: Checkout source code
@@ -20,7 +18,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # Gradle 캐시 적용 (속도 향상)
       - name: Cache Gradle packages
         uses: actions/cache@v4
         with:
@@ -31,35 +28,52 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # Gradle Wrapper 로 빌드 (테스트 제외)
-      - name: Build with Gradle Wrapper
+      - name: Build JAR (skip tests)
         run: ./gradlew build -x test
 
-      # DockerHub 로그인
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          aws-access-key-id: ${{ secrets.AWS_EB_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_EB_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
 
-      # Docker 이미지 빌드 & 푸시
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/portforu:latest
-            ${{ secrets.DOCKER_USERNAME }}/portforu:${{ github.sha }}
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@v1.0.0
+      - name: Build & Push Docker image to ECR
+        env:
+          ECR_REGISTRY: 040067931167.dkr.ecr.ap-northeast-2.amazonaws.com
+          ECR_REPOSITORY: prod-portforu
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+          # Create Dockerrun.aws.json
+          echo '{
+            "AWSEBDockerrunVersion": "1",
+            "Image": {
+              "Name": "'$ECR_REGISTRY'/'$ECR_REPOSITORY':'$IMAGE_TAG'",
+              "Update": "true"
+            },
+            "Ports": [
+              {
+                "ContainerPort": "8080"
+              }
+            ]
+          }' > Dockerrun.aws.json
+
+      - name: Create deployment zip
+        run: zip -r deploy.zip Dockerrun.aws.json
+
+      - name: Deploy to Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v21
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            cd /home/ec2-user/app
-            echo "DOCKER_IMAGE=${{ secrets.DOCKER_USERNAME }}/portforu:latest" > .env
-            chmod +x deploy.sh
-            ./deploy.sh
+          aws_access_key: ${{ secrets.AWS_EB_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_EB_SECRET_ACCESS_KEY }}
+          application_name: portforu-eb
+          environment_name: Portforu-eb-env-new
+          region: ap-northeast-2
+          version_label: ${{ github.sha }}
+          deployment_package: deploy.zip

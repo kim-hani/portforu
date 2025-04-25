@@ -4,25 +4,40 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
 
 @Getter
 @AllArgsConstructor
 public class JobPostingSaveRequestDto {
 
-    private String name;
+    private String title;
 
-    private String industry;
+    private String company;
 
-    private String address;
+    private String location;
+
+    private String link;
 
     private String salary;
 
-    private String qualifications;
+    private String duty;
 
-    private String preferential;
+    private String employmentType;
 
-    private Instant postingDate;
+    private String educationLevel;
 
-    private Instant closingDate;
+    private String experienceYears;
 
+    private String keyAbilities;
+
+    private Integer minExperienceYears;
+
+    private Integer maxExperienceYears;
+
+    private ZonedDateTime hiringStartAt;
+
+    private ZonedDateTime hiringEndAt;
+
+    private String skills;
 }
+
