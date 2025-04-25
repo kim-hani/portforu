@@ -1,0 +1,12 @@
+filebeat.inputs:
+  - type: log
+    paths:
+      - /usr/share/filebeat/logs/*.log  # 컨테이너 내부 경로
+    fields:
+      log_type: spring_boot
+    multiline.pattern: '^\['
+    multiline.negate: true
+    multiline.match: after
+
+output.elasticsearch:
+  hosts: ["http://elasticsearch:9200"]  # 도커 네트워크에 따라 localhost 또는 컨테이너명 사용
