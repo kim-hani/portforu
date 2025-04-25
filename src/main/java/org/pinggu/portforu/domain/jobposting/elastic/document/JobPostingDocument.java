@@ -9,8 +9,6 @@ import java.time.Instant;
 
 @Document(indexName = "job_postings")
 @Getter
-@Setter
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class JobPostingDocument {
