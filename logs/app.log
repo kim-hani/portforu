@@ -5321,3 +5321,986 @@ at org.pinggu.portforu.PortforuApplication.main(PortforuApplication.java:12)
     limit
         ?
 2025-04-25T17:51:15.713+09:00  INFO 22359 --- [portforu] [scheduling-1] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인할 데이터 없음. 스케줄러 종료
+2025-04-25T17:54:15.726+09:00 DEBUG 22359 --- [portforu] [scheduling-1] org.hibernate.SQL                        : 
+    select
+        jp1_0.id 
+    from
+        job_postings jp1_0 
+    where
+        (
+            jp1_0.is_deleted = 0
+        ) 
+        and not(jp1_0.indexed) 
+    limit
+        ?
+2025-04-25T17:54:15.731+09:00  INFO 22359 --- [portforu] [scheduling-1] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인할 데이터 없음. 스케줄러 종료
+2025-04-25T17:57:15.734+09:00 DEBUG 22359 --- [portforu] [scheduling-1] org.hibernate.SQL                        : 
+    select
+        jp1_0.id 
+    from
+        job_postings jp1_0 
+    where
+        (
+            jp1_0.is_deleted = 0
+        ) 
+        and not(jp1_0.indexed) 
+    limit
+        ?
+2025-04-25T17:57:15.750+09:00  INFO 22359 --- [portforu] [scheduling-1] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인할 데이터 없음. 스케줄러 종료
+2025-04-25T18:00:00.005+09:00 DEBUG 22359 --- [portforu] [scheduling-1] org.hibernate.SQL                        : 
+    select
+        uf1_0.id,
+        uf1_0.created_at,
+        uf1_0.file_url,
+        uf1_0.used 
+    from
+        uploaded_file uf1_0 
+    where
+        uf1_0.used=0 
+        and uf1_0.created_at<?
+2025-04-25T18:00:00.007+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    update
+        subscribes s1_0 
+    set
+        status=? 
+    where
+        s1_0.status=? 
+        and s1_0.end_date<? 
+        and s1_0.is_deleted=0 
+        and (
+            s1_0.is_deleted = 0
+        )
+2025-04-25T18:00:00.011+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.s.scheduler.SubscribeScheduler   : 만료된 구독 처리 완료 (벌크 업데이트): count=0
+2025-04-25T18:00:15.757+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id 
+    from
+        job_postings jp1_0 
+    where
+        (
+            jp1_0.is_deleted = 0
+        ) 
+        and not(jp1_0.indexed) 
+    limit
+        ?
+2025-04-25T18:00:15.760+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인할 데이터 없음. 스케줄러 종료
+2025-04-25T18:03:15.892+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id 
+    from
+        job_postings jp1_0 
+    where
+        (
+            jp1_0.is_deleted = 0
+        ) 
+        and not(jp1_0.indexed) 
+    limit
+        ?
+2025-04-25T18:03:15.918+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인할 데이터 없음. 스케줄러 종료
+2025-04-25T18:20:12.036+09:00  WARN 22359 --- [portforu] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=15m28s548ms).
+2025-04-25T18:36:10.763+09:00  WARN 22359 --- [portforu] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=15m28s714ms).
+2025-04-25T18:36:13.181+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id 
+    from
+        job_postings jp1_0 
+    where
+        (
+            jp1_0.is_deleted = 0
+        ) 
+        and not(jp1_0.indexed) 
+    limit
+        ?
+2025-04-25T18:36:13.188+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인할 데이터 없음. 스케줄러 종료
+2025-04-25T18:53:49.626+09:00  WARN 22359 --- [portforu] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=17m8s857ms).
+2025-04-25T19:05:50.985+09:00  WARN 22359 --- [portforu] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=11m31s348ms).
+2025-04-25T19:06:53.387+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id 
+    from
+        job_postings jp1_0 
+    where
+        (
+            jp1_0.is_deleted = 0
+        ) 
+        and not(jp1_0.indexed) 
+    limit
+        ?
+2025-04-25T19:06:53.393+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인할 데이터 없음. 스케줄러 종료
+2025-04-25T19:09:53.426+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id 
+    from
+        job_postings jp1_0 
+    where
+        (
+            jp1_0.is_deleted = 0
+        ) 
+        and not(jp1_0.indexed) 
+    limit
+        ?
+2025-04-25T19:09:53.435+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인할 데이터 없음. 스케줄러 종료
+2025-04-25T19:12:53.452+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id 
+    from
+        job_postings jp1_0 
+    where
+        (
+            jp1_0.is_deleted = 0
+        ) 
+        and not(jp1_0.indexed) 
+    limit
+        ?
+2025-04-25T19:12:53.465+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인할 데이터 없음. 스케줄러 종료
+2025-04-25T19:15:53.463+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id 
+    from
+        job_postings jp1_0 
+    where
+        (
+            jp1_0.is_deleted = 0
+        ) 
+        and not(jp1_0.indexed) 
+    limit
+        ?
+2025-04-25T19:15:53.469+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인할 데이터 없음. 스케줄러 종료
+2025-04-25T19:18:53.492+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id 
+    from
+        job_postings jp1_0 
+    where
+        (
+            jp1_0.is_deleted = 0
+        ) 
+        and not(jp1_0.indexed) 
+    limit
+        ?
+2025-04-25T19:18:53.500+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인할 데이터 없음. 스케줄러 종료
+2025-04-25T19:21:53.501+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id 
+    from
+        job_postings jp1_0 
+    where
+        (
+            jp1_0.is_deleted = 0
+        ) 
+        and not(jp1_0.indexed) 
+    limit
+        ?
+2025-04-25T19:21:53.505+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인할 데이터 없음. 스케줄러 종료
+2025-04-25T19:24:53.516+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id 
+    from
+        job_postings jp1_0 
+    where
+        (
+            jp1_0.is_deleted = 0
+        ) 
+        and not(jp1_0.indexed) 
+    limit
+        ?
+2025-04-25T19:24:53.538+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id,
+        jp1_0.company,
+        jp1_0.created_at,
+        jp1_0.duty,
+        jp1_0.education_level,
+        jp1_0.employment_type,
+        jp1_0.experience_years,
+        jp1_0.hiring_end_at,
+        jp1_0.hiring_start_at,
+        jp1_0.indexed,
+        jp1_0.is_deleted,
+        jp1_0.key_abilities,
+        jp1_0.link,
+        jp1_0.location,
+        jp1_0.max_experience_years,
+        jp1_0.min_experience_years,
+        jp1_0.salary,
+        jp1_0.skills,
+        jp1_0.title,
+        jp1_0.updated_at 
+    from
+        job_postings jp1_0 
+    where
+        (
+            jp1_0.is_deleted = 0
+        ) 
+        and not(jp1_0.indexed) 
+    limit
+        ?
+2025-04-25T19:24:53.834+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id,
+        jp1_0.company,
+        jp1_0.created_at,
+        jp1_0.duty,
+        jp1_0.education_level,
+        jp1_0.employment_type,
+        jp1_0.experience_years,
+        jp1_0.hiring_end_at,
+        jp1_0.hiring_start_at,
+        jp1_0.indexed,
+        jp1_0.is_deleted,
+        jp1_0.key_abilities,
+        jp1_0.link,
+        jp1_0.location,
+        jp1_0.max_experience_years,
+        jp1_0.min_experience_years,
+        jp1_0.salary,
+        jp1_0.skills,
+        jp1_0.title,
+        jp1_0.updated_at 
+    from
+        job_postings jp1_0 
+    where
+        jp1_0.id=? 
+        and (
+            jp1_0.is_deleted = 0
+        )
+2025-04-25T19:24:53.859+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    update
+        job_postings 
+    set
+        company=?,
+        duty=?,
+        education_level=?,
+        employment_type=?,
+        experience_years=?,
+        hiring_end_at=?,
+        hiring_start_at=?,
+        indexed=?,
+        is_deleted=?,
+        key_abilities=?,
+        link=?,
+        location=?,
+        max_experience_years=?,
+        min_experience_years=?,
+        salary=?,
+        skills=?,
+        title=?,
+        updated_at=? 
+    where
+        id=?
+2025-04-25T19:24:53.863+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인 완료: 1
+2025-04-25T19:24:53.880+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id,
+        jp1_0.company,
+        jp1_0.created_at,
+        jp1_0.duty,
+        jp1_0.education_level,
+        jp1_0.employment_type,
+        jp1_0.experience_years,
+        jp1_0.hiring_end_at,
+        jp1_0.hiring_start_at,
+        jp1_0.indexed,
+        jp1_0.is_deleted,
+        jp1_0.key_abilities,
+        jp1_0.link,
+        jp1_0.location,
+        jp1_0.max_experience_years,
+        jp1_0.min_experience_years,
+        jp1_0.salary,
+        jp1_0.skills,
+        jp1_0.title,
+        jp1_0.updated_at 
+    from
+        job_postings jp1_0 
+    where
+        jp1_0.id=? 
+        and (
+            jp1_0.is_deleted = 0
+        )
+2025-04-25T19:24:53.882+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    update
+        job_postings 
+    set
+        company=?,
+        duty=?,
+        education_level=?,
+        employment_type=?,
+        experience_years=?,
+        hiring_end_at=?,
+        hiring_start_at=?,
+        indexed=?,
+        is_deleted=?,
+        key_abilities=?,
+        link=?,
+        location=?,
+        max_experience_years=?,
+        min_experience_years=?,
+        salary=?,
+        skills=?,
+        title=?,
+        updated_at=? 
+    where
+        id=?
+2025-04-25T19:24:53.885+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인 완료: 2
+2025-04-25T19:27:53.902+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id 
+    from
+        job_postings jp1_0 
+    where
+        (
+            jp1_0.is_deleted = 0
+        ) 
+        and not(jp1_0.indexed) 
+    limit
+        ?
+2025-04-25T19:27:53.918+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id,
+        jp1_0.company,
+        jp1_0.created_at,
+        jp1_0.duty,
+        jp1_0.education_level,
+        jp1_0.employment_type,
+        jp1_0.experience_years,
+        jp1_0.hiring_end_at,
+        jp1_0.hiring_start_at,
+        jp1_0.indexed,
+        jp1_0.is_deleted,
+        jp1_0.key_abilities,
+        jp1_0.link,
+        jp1_0.location,
+        jp1_0.max_experience_years,
+        jp1_0.min_experience_years,
+        jp1_0.salary,
+        jp1_0.skills,
+        jp1_0.title,
+        jp1_0.updated_at 
+    from
+        job_postings jp1_0 
+    where
+        (
+            jp1_0.is_deleted = 0
+        ) 
+        and not(jp1_0.indexed) 
+    limit
+        ?
+2025-04-25T19:27:53.973+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id,
+        jp1_0.company,
+        jp1_0.created_at,
+        jp1_0.duty,
+        jp1_0.education_level,
+        jp1_0.employment_type,
+        jp1_0.experience_years,
+        jp1_0.hiring_end_at,
+        jp1_0.hiring_start_at,
+        jp1_0.indexed,
+        jp1_0.is_deleted,
+        jp1_0.key_abilities,
+        jp1_0.link,
+        jp1_0.location,
+        jp1_0.max_experience_years,
+        jp1_0.min_experience_years,
+        jp1_0.salary,
+        jp1_0.skills,
+        jp1_0.title,
+        jp1_0.updated_at 
+    from
+        job_postings jp1_0 
+    where
+        jp1_0.id=? 
+        and (
+            jp1_0.is_deleted = 0
+        )
+2025-04-25T19:27:53.979+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    update
+        job_postings 
+    set
+        company=?,
+        duty=?,
+        education_level=?,
+        employment_type=?,
+        experience_years=?,
+        hiring_end_at=?,
+        hiring_start_at=?,
+        indexed=?,
+        is_deleted=?,
+        key_abilities=?,
+        link=?,
+        location=?,
+        max_experience_years=?,
+        min_experience_years=?,
+        salary=?,
+        skills=?,
+        title=?,
+        updated_at=? 
+    where
+        id=?
+2025-04-25T19:27:53.984+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인 완료: 3
+2025-04-25T19:27:54.004+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id,
+        jp1_0.company,
+        jp1_0.created_at,
+        jp1_0.duty,
+        jp1_0.education_level,
+        jp1_0.employment_type,
+        jp1_0.experience_years,
+        jp1_0.hiring_end_at,
+        jp1_0.hiring_start_at,
+        jp1_0.indexed,
+        jp1_0.is_deleted,
+        jp1_0.key_abilities,
+        jp1_0.link,
+        jp1_0.location,
+        jp1_0.max_experience_years,
+        jp1_0.min_experience_years,
+        jp1_0.salary,
+        jp1_0.skills,
+        jp1_0.title,
+        jp1_0.updated_at 
+    from
+        job_postings jp1_0 
+    where
+        jp1_0.id=? 
+        and (
+            jp1_0.is_deleted = 0
+        )
+2025-04-25T19:27:54.010+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    update
+        job_postings 
+    set
+        company=?,
+        duty=?,
+        education_level=?,
+        employment_type=?,
+        experience_years=?,
+        hiring_end_at=?,
+        hiring_start_at=?,
+        indexed=?,
+        is_deleted=?,
+        key_abilities=?,
+        link=?,
+        location=?,
+        max_experience_years=?,
+        min_experience_years=?,
+        salary=?,
+        skills=?,
+        title=?,
+        updated_at=? 
+    where
+        id=?
+2025-04-25T19:27:54.014+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인 완료: 4
+2025-04-25T19:27:54.034+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id,
+        jp1_0.company,
+        jp1_0.created_at,
+        jp1_0.duty,
+        jp1_0.education_level,
+        jp1_0.employment_type,
+        jp1_0.experience_years,
+        jp1_0.hiring_end_at,
+        jp1_0.hiring_start_at,
+        jp1_0.indexed,
+        jp1_0.is_deleted,
+        jp1_0.key_abilities,
+        jp1_0.link,
+        jp1_0.location,
+        jp1_0.max_experience_years,
+        jp1_0.min_experience_years,
+        jp1_0.salary,
+        jp1_0.skills,
+        jp1_0.title,
+        jp1_0.updated_at 
+    from
+        job_postings jp1_0 
+    where
+        jp1_0.id=? 
+        and (
+            jp1_0.is_deleted = 0
+        )
+2025-04-25T19:27:54.038+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    update
+        job_postings 
+    set
+        company=?,
+        duty=?,
+        education_level=?,
+        employment_type=?,
+        experience_years=?,
+        hiring_end_at=?,
+        hiring_start_at=?,
+        indexed=?,
+        is_deleted=?,
+        key_abilities=?,
+        link=?,
+        location=?,
+        max_experience_years=?,
+        min_experience_years=?,
+        salary=?,
+        skills=?,
+        title=?,
+        updated_at=? 
+    where
+        id=?
+2025-04-25T19:27:54.041+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인 완료: 5
+2025-04-25T19:27:54.061+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id,
+        jp1_0.company,
+        jp1_0.created_at,
+        jp1_0.duty,
+        jp1_0.education_level,
+        jp1_0.employment_type,
+        jp1_0.experience_years,
+        jp1_0.hiring_end_at,
+        jp1_0.hiring_start_at,
+        jp1_0.indexed,
+        jp1_0.is_deleted,
+        jp1_0.key_abilities,
+        jp1_0.link,
+        jp1_0.location,
+        jp1_0.max_experience_years,
+        jp1_0.min_experience_years,
+        jp1_0.salary,
+        jp1_0.skills,
+        jp1_0.title,
+        jp1_0.updated_at 
+    from
+        job_postings jp1_0 
+    where
+        jp1_0.id=? 
+        and (
+            jp1_0.is_deleted = 0
+        )
+2025-04-25T19:27:54.064+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    update
+        job_postings 
+    set
+        company=?,
+        duty=?,
+        education_level=?,
+        employment_type=?,
+        experience_years=?,
+        hiring_end_at=?,
+        hiring_start_at=?,
+        indexed=?,
+        is_deleted=?,
+        key_abilities=?,
+        link=?,
+        location=?,
+        max_experience_years=?,
+        min_experience_years=?,
+        salary=?,
+        skills=?,
+        title=?,
+        updated_at=? 
+    where
+        id=?
+2025-04-25T19:27:54.067+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인 완료: 6
+2025-04-25T19:27:54.082+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id,
+        jp1_0.company,
+        jp1_0.created_at,
+        jp1_0.duty,
+        jp1_0.education_level,
+        jp1_0.employment_type,
+        jp1_0.experience_years,
+        jp1_0.hiring_end_at,
+        jp1_0.hiring_start_at,
+        jp1_0.indexed,
+        jp1_0.is_deleted,
+        jp1_0.key_abilities,
+        jp1_0.link,
+        jp1_0.location,
+        jp1_0.max_experience_years,
+        jp1_0.min_experience_years,
+        jp1_0.salary,
+        jp1_0.skills,
+        jp1_0.title,
+        jp1_0.updated_at 
+    from
+        job_postings jp1_0 
+    where
+        jp1_0.id=? 
+        and (
+            jp1_0.is_deleted = 0
+        )
+2025-04-25T19:27:54.084+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    update
+        job_postings 
+    set
+        company=?,
+        duty=?,
+        education_level=?,
+        employment_type=?,
+        experience_years=?,
+        hiring_end_at=?,
+        hiring_start_at=?,
+        indexed=?,
+        is_deleted=?,
+        key_abilities=?,
+        link=?,
+        location=?,
+        max_experience_years=?,
+        min_experience_years=?,
+        salary=?,
+        skills=?,
+        title=?,
+        updated_at=? 
+    where
+        id=?
+2025-04-25T19:27:54.089+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인 완료: 7
+2025-04-25T19:27:54.103+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id,
+        jp1_0.company,
+        jp1_0.created_at,
+        jp1_0.duty,
+        jp1_0.education_level,
+        jp1_0.employment_type,
+        jp1_0.experience_years,
+        jp1_0.hiring_end_at,
+        jp1_0.hiring_start_at,
+        jp1_0.indexed,
+        jp1_0.is_deleted,
+        jp1_0.key_abilities,
+        jp1_0.link,
+        jp1_0.location,
+        jp1_0.max_experience_years,
+        jp1_0.min_experience_years,
+        jp1_0.salary,
+        jp1_0.skills,
+        jp1_0.title,
+        jp1_0.updated_at 
+    from
+        job_postings jp1_0 
+    where
+        jp1_0.id=? 
+        and (
+            jp1_0.is_deleted = 0
+        )
+2025-04-25T19:27:54.106+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    update
+        job_postings 
+    set
+        company=?,
+        duty=?,
+        education_level=?,
+        employment_type=?,
+        experience_years=?,
+        hiring_end_at=?,
+        hiring_start_at=?,
+        indexed=?,
+        is_deleted=?,
+        key_abilities=?,
+        link=?,
+        location=?,
+        max_experience_years=?,
+        min_experience_years=?,
+        salary=?,
+        skills=?,
+        title=?,
+        updated_at=? 
+    where
+        id=?
+2025-04-25T19:27:54.111+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인 완료: 8
+2025-04-25T19:27:54.124+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id,
+        jp1_0.company,
+        jp1_0.created_at,
+        jp1_0.duty,
+        jp1_0.education_level,
+        jp1_0.employment_type,
+        jp1_0.experience_years,
+        jp1_0.hiring_end_at,
+        jp1_0.hiring_start_at,
+        jp1_0.indexed,
+        jp1_0.is_deleted,
+        jp1_0.key_abilities,
+        jp1_0.link,
+        jp1_0.location,
+        jp1_0.max_experience_years,
+        jp1_0.min_experience_years,
+        jp1_0.salary,
+        jp1_0.skills,
+        jp1_0.title,
+        jp1_0.updated_at 
+    from
+        job_postings jp1_0 
+    where
+        jp1_0.id=? 
+        and (
+            jp1_0.is_deleted = 0
+        )
+2025-04-25T19:27:54.126+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    update
+        job_postings 
+    set
+        company=?,
+        duty=?,
+        education_level=?,
+        employment_type=?,
+        experience_years=?,
+        hiring_end_at=?,
+        hiring_start_at=?,
+        indexed=?,
+        is_deleted=?,
+        key_abilities=?,
+        link=?,
+        location=?,
+        max_experience_years=?,
+        min_experience_years=?,
+        salary=?,
+        skills=?,
+        title=?,
+        updated_at=? 
+    where
+        id=?
+2025-04-25T19:27:54.131+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인 완료: 9
+2025-04-25T19:27:54.145+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id,
+        jp1_0.company,
+        jp1_0.created_at,
+        jp1_0.duty,
+        jp1_0.education_level,
+        jp1_0.employment_type,
+        jp1_0.experience_years,
+        jp1_0.hiring_end_at,
+        jp1_0.hiring_start_at,
+        jp1_0.indexed,
+        jp1_0.is_deleted,
+        jp1_0.key_abilities,
+        jp1_0.link,
+        jp1_0.location,
+        jp1_0.max_experience_years,
+        jp1_0.min_experience_years,
+        jp1_0.salary,
+        jp1_0.skills,
+        jp1_0.title,
+        jp1_0.updated_at 
+    from
+        job_postings jp1_0 
+    where
+        jp1_0.id=? 
+        and (
+            jp1_0.is_deleted = 0
+        )
+2025-04-25T19:27:54.147+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    update
+        job_postings 
+    set
+        company=?,
+        duty=?,
+        education_level=?,
+        employment_type=?,
+        experience_years=?,
+        hiring_end_at=?,
+        hiring_start_at=?,
+        indexed=?,
+        is_deleted=?,
+        key_abilities=?,
+        link=?,
+        location=?,
+        max_experience_years=?,
+        min_experience_years=?,
+        salary=?,
+        skills=?,
+        title=?,
+        updated_at=? 
+    where
+        id=?
+2025-04-25T19:27:54.149+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인 완료: 10
+2025-04-25T19:27:54.166+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id,
+        jp1_0.company,
+        jp1_0.created_at,
+        jp1_0.duty,
+        jp1_0.education_level,
+        jp1_0.employment_type,
+        jp1_0.experience_years,
+        jp1_0.hiring_end_at,
+        jp1_0.hiring_start_at,
+        jp1_0.indexed,
+        jp1_0.is_deleted,
+        jp1_0.key_abilities,
+        jp1_0.link,
+        jp1_0.location,
+        jp1_0.max_experience_years,
+        jp1_0.min_experience_years,
+        jp1_0.salary,
+        jp1_0.skills,
+        jp1_0.title,
+        jp1_0.updated_at 
+    from
+        job_postings jp1_0 
+    where
+        jp1_0.id=? 
+        and (
+            jp1_0.is_deleted = 0
+        )
+2025-04-25T19:27:54.167+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    update
+        job_postings 
+    set
+        company=?,
+        duty=?,
+        education_level=?,
+        employment_type=?,
+        experience_years=?,
+        hiring_end_at=?,
+        hiring_start_at=?,
+        indexed=?,
+        is_deleted=?,
+        key_abilities=?,
+        link=?,
+        location=?,
+        max_experience_years=?,
+        min_experience_years=?,
+        salary=?,
+        skills=?,
+        title=?,
+        updated_at=? 
+    where
+        id=?
+2025-04-25T19:27:54.170+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인 완료: 11
+2025-04-25T19:27:54.192+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id,
+        jp1_0.company,
+        jp1_0.created_at,
+        jp1_0.duty,
+        jp1_0.education_level,
+        jp1_0.employment_type,
+        jp1_0.experience_years,
+        jp1_0.hiring_end_at,
+        jp1_0.hiring_start_at,
+        jp1_0.indexed,
+        jp1_0.is_deleted,
+        jp1_0.key_abilities,
+        jp1_0.link,
+        jp1_0.location,
+        jp1_0.max_experience_years,
+        jp1_0.min_experience_years,
+        jp1_0.salary,
+        jp1_0.skills,
+        jp1_0.title,
+        jp1_0.updated_at 
+    from
+        job_postings jp1_0 
+    where
+        jp1_0.id=? 
+        and (
+            jp1_0.is_deleted = 0
+        )
+2025-04-25T19:27:54.194+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    update
+        job_postings 
+    set
+        company=?,
+        duty=?,
+        education_level=?,
+        employment_type=?,
+        experience_years=?,
+        hiring_end_at=?,
+        hiring_start_at=?,
+        indexed=?,
+        is_deleted=?,
+        key_abilities=?,
+        link=?,
+        location=?,
+        max_experience_years=?,
+        min_experience_years=?,
+        salary=?,
+        skills=?,
+        title=?,
+        updated_at=? 
+    where
+        id=?
+2025-04-25T19:27:54.196+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인 완료: 12
+2025-04-25T19:30:54.203+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id 
+    from
+        job_postings jp1_0 
+    where
+        (
+            jp1_0.is_deleted = 0
+        ) 
+        and not(jp1_0.indexed) 
+    limit
+        ?
+2025-04-25T19:30:54.218+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인할 데이터 없음. 스케줄러 종료
+2025-04-25T19:33:54.227+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id 
+    from
+        job_postings jp1_0 
+    where
+        (
+            jp1_0.is_deleted = 0
+        ) 
+        and not(jp1_0.indexed) 
+    limit
+        ?
+2025-04-25T19:33:54.236+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인할 데이터 없음. 스케줄러 종료
+2025-04-25T19:36:54.246+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id 
+    from
+        job_postings jp1_0 
+    where
+        (
+            jp1_0.is_deleted = 0
+        ) 
+        and not(jp1_0.indexed) 
+    limit
+        ?
+2025-04-25T19:36:54.257+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인할 데이터 없음. 스케줄러 종료
+2025-04-25T19:39:54.279+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id 
+    from
+        job_postings jp1_0 
+    where
+        (
+            jp1_0.is_deleted = 0
+        ) 
+        and not(jp1_0.indexed) 
+    limit
+        ?
+2025-04-25T19:39:54.294+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인할 데이터 없음. 스케줄러 종료
+2025-04-25T19:42:54.309+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id 
+    from
+        job_postings jp1_0 
+    where
+        (
+            jp1_0.is_deleted = 0
+        ) 
+        and not(jp1_0.indexed) 
+    limit
+        ?
+2025-04-25T19:42:54.319+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인할 데이터 없음. 스케줄러 종료
+2025-04-25T19:45:54.323+09:00 DEBUG 22359 --- [portforu] [scheduling-2] org.hibernate.SQL                        : 
+    select
+        jp1_0.id 
+    from
+        job_postings jp1_0 
+    where
+        (
+            jp1_0.is_deleted = 0
+        ) 
+        and not(jp1_0.indexed) 
+    limit
+        ?
+2025-04-25T19:45:54.330+09:00  INFO 22359 --- [portforu] [scheduling-2] o.p.p.d.j.e.s.JobPostingIndexScheduler   : 색인할 데이터 없음. 스케줄러 종료
