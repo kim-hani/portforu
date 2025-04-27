@@ -124,17 +124,15 @@ class SubscribeSchedulerConcurrencyTest {
 
         // then
         Membership saved = membershipRepository.findById(membership.getId()).orElseThrow();
-        // 원래 5 + ACTIVE 10건 복구
         assertThat(saved.getQuantity()).isEqualTo(5 + threadCount);
-
         long expiredActive = subscribeRepository.countByStatus(SubscribeStatus.EXPIRED);
-        // ACTIVE → EXPIRED 10건
+
         assertThat(expiredActive).isEqualTo(threadCount);
     }
 
     @Test
     void CANCELED_구독_만료_정원복구_동시성테스트() throws InterruptedException {
-        // given: 다시 쓰레드풀과 래치 초기화
+        // given
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
 
@@ -152,10 +150,10 @@ class SubscribeSchedulerConcurrencyTest {
 
         // then
         Membership saved = membershipRepository.findById(membership.getId()).orElseThrow();
-        assertThat(saved.getQuantity()).isEqualTo(5 + threadCount /*ACTIVE*/ + threadCount /*CANCELED*/);
+        assertThat(saved.getQuantity()).isEqualTo(5 + threadCount);
 
-        long expiredCanceled = subscribeRepository.countByStatus(SubscribeStatus.EXPIRED);
-        // ACTIVE + CANCELED → EXPIRED 총 20건
-        assertThat(expiredCanceled).isEqualTo(threadCount * 2);
+        long expiredCount = subscribeRepository.countByStatus(SubscribeStatus.EXPIRED);
+        assertThat(expiredCount).isEqualTo(threadCount);
     }
+
 }

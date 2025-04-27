@@ -27,29 +27,28 @@ public class CanceledSubscribeScheduler {
     @Scheduled(cron = "0 0 3 * * *")
     @Transactional
     public void expireCanceledSubscriptions() {
-        Instant now = Instant.now();
+        redisLockExecutor.executeWithLock("lock:expire-canceled-subscriptions", 10, 3,
+                () -> {
+                    Instant now = Instant.now();
 
-        List<Subscribe> canceledSubs = subscribeRepository
-                .findAllByStatusAndEndDateBefore(SubscribeStatus.CANCELED, now);
+                    List<Subscribe> canceledSubs = subscribeRepository
+                            .findAllByStatusAndEndDateBefore(SubscribeStatus.CANCELED, now);
 
-        canceledSubs.forEach(sub -> {
-            Long subscribeId = sub.getId();
+                    canceledSubs.forEach(sub -> {
+                        sub.expire();  // CANCELED → EXPIRED
 
-            redisLockExecutor.executeWithLock("lock:subscribe:" + subscribeId, 5, 3, () -> {
-                sub.expire(); // CANCELED → EXPIRED
+                        String sql = """
+                        UPDATE memberships
+                        SET quantity = quantity + 1
+                        WHERE id = (
+                            SELECT membership_id FROM subscribes WHERE id = ?
+                        )
+                    """;
+                        jdbcTemplate.update(sql, sub.getId());
+                    });
 
-                // JDBC로 quantity 증가
-                String sql = """
-                    UPDATE memberships
-                    SET quantity = quantity + 1
-                    WHERE id = (
-                        SELECT membership_id FROM subscribes WHERE id = ?
-                    )
-                """;
-                jdbcTemplate.update(sql, subscribeId);
-            });
-        });
-
-        log.info("만료된 CANCELED 구독 처리 및 정원 복구 완료: count={}", canceledSubs.size());
+                    log.info("만료된 CANCELED 구독 처리 및 정원 복구 완료: count={}", canceledSubs.size());
+                }
+        );
     }
 }
