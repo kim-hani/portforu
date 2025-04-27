@@ -32,11 +32,16 @@ import static org.mockito.BDDMockito.*;
 
 class PaymentServiceConcurrencyTest {
 
-    @Mock private RedisLockExecutor redisLockExecutor;
-    @Mock private PaymentRepository paymentRepository;
-    @Mock private SubscribeRepository subscribeRepository;
-    @Mock private SubscribeService subscribeService;
-    @Mock private RestTemplate restTemplate;
+    @Mock
+    private RedisLockExecutor redisLockExecutor;
+    @Mock
+    private PaymentRepository paymentRepository;
+    @Mock
+    private SubscribeRepository subscribeRepository;
+    @Mock
+    private SubscribeService subscribeService;
+    @Mock
+    private RestTemplate restTemplate;
 
     private PaymentFinder paymentFinder;
     private PaymentService paymentService;
@@ -94,7 +99,7 @@ class PaymentServiceConcurrencyTest {
 
     @Test
     void 결제_완료_동시요청시_멤버십_정원이_초과되지_않는다() throws InterruptedException {
-        int threadCount = 200;
+        int threadCount = 2000;
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
 
@@ -152,4 +157,83 @@ class PaymentServiceConcurrencyTest {
         assertThat(successCount.get() + failCount.get()).isEqualTo(threadCount);
         assertThat(membership.getQuantity()).isEqualTo(5 - successCount.get());
     }
+
+    @Test
+    void 중복결제_방지_동시요청() throws InterruptedException {
+        // given
+        Long subscribeId = 1L;
+
+        Member member = Member.builder()
+                .email("user@test.com").password("1234").name("user")
+                .phoneNumber("123-1234-1234").address("인천")
+                .userRole(UserRole.ROLE_USER)
+                .provider("local")
+                .build();
+
+        Membership membership = Membership.builder()
+                .name("testmembership")
+                .price(10000)
+                .quantity(5)
+                .year(Year.now().getValue())
+                .build();
+        ReflectionTestUtils.setField(membership, "id", 1L);
+
+        Subscribe subscribe = Subscribe.builder()
+                .member(member)
+                .membership(membership)
+                .startDate(Instant.now())
+                .endDate(Instant.now().plusSeconds(3600))
+                .build();
+        ReflectionTestUtils.setField(subscribe, "id", subscribeId);
+
+        Payment payment = Payment.builder()
+                .status(PaymentStatus.PENDING)
+                .subscribe(subscribe)
+                .build();
+
+        given(paymentRepository.findBySubscribeId(eq(subscribeId))).willReturn(Optional.of(payment));
+        given(subscribeRepository.findById(eq(subscribeId))).willReturn(Optional.of(subscribe));
+        given(restTemplate.postForEntity(anyString(), any(), eq(TossPaymentConfirmResponseDto.class)))
+                .willReturn(ResponseEntity.ok(
+                        TossPaymentConfirmResponseDto.builder()
+                                .method("카드")
+                                .easyPay(null)
+                                .build()
+                ));
+
+        // when
+        int threadCount = 10000;
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+        AtomicInteger successCount = new AtomicInteger(0);
+        AtomicInteger failCount = new AtomicInteger(0);
+
+        for (int i = 0; i < threadCount; i++) {
+            int finalIdx = i;
+            executor.submit(() -> {
+                try {
+                    paymentService.handleSuccessPayment(
+                            "payKey_" + finalIdx,
+                            "order_" + finalIdx + "_" + subscribeId,
+                            10000L
+                    );
+                    successCount.incrementAndGet();
+                } catch (CustomException e) {
+                    failCount.incrementAndGet();
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+
+        // then
+        System.out.println("성공한 결제 수 = " + successCount.get());
+        System.out.println("실패한 결제 수 = " + failCount.get());
+
+        assertThat(successCount.get()).isEqualTo(1);
+        assertThat(failCount.get()).isEqualTo(threadCount - 1);
+    }
+
 }

@@ -27,9 +27,12 @@ import static org.mockito.Mockito.*;
 
 class PaymentExpireServiceTest {
 
-    @Mock private PaymentRepository paymentRepository;
-    @Mock private RedisLockExecutor redisLockExecutor;
-    @InjectMocks private PaymentExpireService expireService;
+    @Mock
+    private PaymentRepository paymentRepository;
+    @Mock
+    private RedisLockExecutor redisLockExecutor;
+    @InjectMocks
+    private PaymentExpireService expireService;
 
     private Payment pendingPayment;
     private Payment nonPendingPayment;

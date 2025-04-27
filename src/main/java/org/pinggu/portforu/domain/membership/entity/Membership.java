@@ -45,10 +45,11 @@ public class Membership extends BaseEntity {
         this.quantity--;
     }
 
-    // 정원 증가
-    public void increaseQuantity() {
-        this.quantity++;
-    }
+      // jdbc방식을 쓰면서 필요없어졋으나 혹시모르니 남겨둠
+//    // 정원 증가
+//    public void increaseQuantity() {
+//        this.quantity++;
+//    }
 
     public void update(String newName, Integer newPrice, Integer newQuantity, Integer newYear) {
         if (newName != null) this.name = newName;

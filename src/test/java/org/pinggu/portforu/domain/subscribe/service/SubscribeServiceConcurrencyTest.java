@@ -33,14 +33,22 @@ import static org.mockito.BDDMockito.*;
 @ExtendWith(MockitoExtension.class)
 class SubscribeServiceConcurrencyTest {
 
-    @Mock RedisLockExecutor redisLockExecutor;
-    @Mock SubscribeFinder subscribeFinder;
-    @Mock MembershipFinder membershipFinder;
-    @Mock PaymentFinder paymentFinder;
-    @Mock MembershipRepository membershipRepository;
-    @Mock SubscribeRepository subscribeRepository;
-    @Mock PaymentRepository paymentRepository;
-    @Mock PaymentExpireScheduler paymentExpireScheduler;
+    @Mock
+    RedisLockExecutor redisLockExecutor;
+    @Mock
+    SubscribeFinder subscribeFinder;
+    @Mock
+    MembershipFinder membershipFinder;
+    @Mock
+    PaymentFinder paymentFinder;
+    @Mock
+    MembershipRepository membershipRepository;
+    @Mock
+    SubscribeRepository subscribeRepository;
+    @Mock
+    PaymentRepository paymentRepository;
+    @Mock
+    PaymentExpireScheduler paymentExpireScheduler;
 
     @InjectMocks SubscribeService subscribeService;
 

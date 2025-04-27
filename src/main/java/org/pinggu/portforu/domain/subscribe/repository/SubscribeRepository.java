@@ -32,4 +32,6 @@ public interface SubscribeRepository extends JpaRepository<Subscribe, Long> {
                                  @Param("membershipId") Long membershipId);
 
     List<Subscribe> findAllByStatusAndEndDateBefore(SubscribeStatus status, Instant now);
+
+    long countByStatus(SubscribeStatus status);
 }
