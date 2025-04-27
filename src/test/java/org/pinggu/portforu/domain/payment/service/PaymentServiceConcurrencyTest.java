@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
-
+//redis mock로 가상으로 적용버전
 class PaymentServiceConcurrencyTest {
 
     @Mock

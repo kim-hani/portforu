@@ -135,6 +135,10 @@ public class SubscribeService {
 
         redisLockExecutor.executeWithLock(lockKey, 5, 3, () -> {
             if (paymentStatus == PaymentStatus.COMPLETED) {
+                if (membership.getQuantity() <= 0) {
+                    throw new CustomException(HttpStatus.BAD_REQUEST, "멤버십 정원이 초과되었습니다.");
+
+                }
                 subscribe.activate();
                 membership.decreaseQuantity(); // 락 안에서 감소
                 membershipRepository.save(membership);
