@@ -14,7 +14,12 @@ import org.pinggu.portforu.domain.member.enums.UserRole;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "members")
+@Table(
+        name = "members",
+        indexes = {
+                @Index(name = "idx_member_email", columnList = "email", unique = true)
+        }
+)
 @SQLDelete(sql = "UPDATE members  SET is_deleted = true WHERE id = ?")
 @Where(clause = "is_deleted = false")
 public class Member extends BaseEntity {

@@ -10,7 +10,12 @@ import org.pinggu.portforu.domain.member.entity.Member;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name ="portfolios")
+@Table(
+        name = "portfolios",
+        indexes = {
+                @Index(name = "idx_portfolio_member_id", columnList = "member_id")
+        }
+)
 @SQLDelete(sql = "UPDATE portfolios SET is_deleted = true WHERE id = ?")
 @Where(clause = "is_deleted = false")
 public class Portfolio extends BaseEntity {

@@ -15,7 +15,12 @@ import java.time.ZonedDateTime;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "job_postings")
+@Table(
+        name = "job_postings",
+        indexes = {
+                @Index(name = "idx_job_posting_link", columnList = "link", unique = true)
+        }
+)
 @SQLDelete(sql = "UPDATE job_postings SET is_deleted = true WHERE id = ?")
 @Where(clause = "is_deleted = false")
 public class JobPosting extends BaseEntity {

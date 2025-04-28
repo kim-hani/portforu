@@ -15,7 +15,12 @@ import org.pinggu.portforu.domain.subscribe.entity.Subscribe;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "payments")
+@Table(
+        name = "payments",
+        indexes = {
+                @Index(name = "idx_payment_subscribe_id_status", columnList = "subscribe_id, status")
+        }
+)
 @SQLDelete(sql = "UPDATE payments SET is_deleted = true WHERE id = ?")
 @Where(clause = "is_deleted = false")
 public class Payment extends BaseEntity {

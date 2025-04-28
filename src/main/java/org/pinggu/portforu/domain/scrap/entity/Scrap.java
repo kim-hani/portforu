@@ -13,7 +13,12 @@ import org.pinggu.portforu.domain.member.entity.Member;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "scraps")
+@Table(
+        name = "scraps",
+        indexes = {
+                @Index(name = "idx_scrap_member_job_posting", columnList = "member_id, job_posting_id")
+        }
+)
 @SQLDelete(sql = "UPDATE scraps SET is_deleted = true WHERE id = ?")
 public class Scrap extends BaseEntity {
 
