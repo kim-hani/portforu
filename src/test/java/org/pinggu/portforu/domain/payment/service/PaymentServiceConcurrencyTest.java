@@ -99,7 +99,7 @@ class PaymentServiceConcurrencyTest {
 
     @Test
     void 결제_완료_동시요청시_멤버십_정원이_초과되지_않는다() throws InterruptedException {
-        int threadCount = 2000;
+        int threadCount = 10000;
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
 
