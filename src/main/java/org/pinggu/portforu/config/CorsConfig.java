@@ -14,7 +14,10 @@ public class CorsConfig {
     @Bean
     public CorsFilter customCorsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000", "https://api.portforu.online"));
+        config.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                "https://api.portforu.online" // Swagger UI Origin
+        ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("Authorization", "refresh-token"));

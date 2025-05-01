@@ -5,12 +5,14 @@ import org.pinggu.portforu.domain.oauth.user.CustomOAuth2UserService;
 import org.pinggu.portforu.domain.oauth.handler.OAuth2AuthenticationSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
+
 
 @Configuration
 @RequiredArgsConstructor
@@ -30,6 +32,7 @@ public class SecurityConfig {
             OAuth2AuthenticationSuccessHandler successHandler
     ) throws Exception {
         http
+                .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, SecurityContextHolderAwareRequestFilter.class)
