@@ -21,7 +21,7 @@ spring:
       port: ${REDIS_PORT}
 
   elasticsearch:
-    uris: https://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}
+    uris: https://${ELASTIC_HOST}:${ELASTIC_PORT}
 
 jwt:
   secret: ${JWT_SECRET}
