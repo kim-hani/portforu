@@ -6,7 +6,6 @@ import org.pinggu.portforu.domain.oauth.handler.OAuth2AuthenticationSuccessHandl
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,27 +24,37 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, CustomOAuth2UserService customOAuth2UserService,
-                                           OAuth2AuthenticationSuccessHandler successHandler) throws Exception {
-        return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+    public SecurityFilterChain filterChain(
+            HttpSecurity http,
+            CustomOAuth2UserService oauth2UserService,
+            OAuth2AuthenticationSuccessHandler successHandler
+    ) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, SecurityContextHolderAwareRequestFilter.class)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .logout(AbstractHttpConfigurer::disable)
-                .rememberMe(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**", "/oauth2/**", "/login/**", "/error",
-                                "/pay/**","/api/v1/payments/**","/payments/**").permitAll()
-                        .anyRequest().authenticated())
-                .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService))
-                        .successHandler(successHandler)
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/swagger-ui/index.html"
+                        ).permitAll()
+                        .requestMatchers(
+                                "/api/v1/auth/**",
+                                "/oauth2/**",
+                                "/login/**",
+                                "/error",
+                                "/pay/**",
+                                "/api/v1/payments/**",
+                                "/payments/**"
+                        ).permitAll()
+                        .anyRequest().authenticated()
                 )
-                .build();
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(u -> u.userService(oauth2UserService))
+                        .successHandler(successHandler)
+                );
+        return http.build();
     }
-
 }
