@@ -1,5 +1,7 @@
 package org.pinggu.portforu.web.view.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.pinggu.portforu.common.exception.CustomException;
 import org.pinggu.portforu.domain.member.entity.Member;
@@ -8,7 +10,6 @@ import org.pinggu.portforu.domain.payment.enums.PaymentStatus;
 import org.pinggu.portforu.domain.payment.service.PaymentFinder;
 import org.pinggu.portforu.domain.subscribe.entity.Subscribe;
 import org.pinggu.portforu.domain.subscribe.service.SubscribeFinder;
-import org.pinggu.portforu.domain.subscribe.service.SubscribeService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -17,9 +18,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+@Tag(name = "결제 페이지 컨트롤러", description = "결제 페이지 렌더링 및 리다이렉트 처리")
 @Controller
+@RequestMapping("/api/v1/payments")
 @RequiredArgsConstructor
-@RequestMapping("/pay")
 public class PaymentPageController {
 
     private final SubscribeFinder subscribeFinder;
@@ -34,8 +36,12 @@ public class PaymentPageController {
     @Value("${toss.fail-url}")
     private String failUrl;
 
+    @Operation(summary = "결제 페이지 렌더링", description = "구독 ID를 받아 결제 페이지를 렌더링합니다.")
     @GetMapping
-    public String paymentPage(@RequestParam Long subscribeId, Model model) {
+    public String paymentPage(
+            @RequestParam Long subscribeId,
+            Model model
+    ) {
         try {
             Subscribe subscribe = subscribeFinder.findById(subscribeId);
             Payment payment = paymentFinder.findBySubscribeId(subscribeId);

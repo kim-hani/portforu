@@ -15,6 +15,14 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+
+  elasticsearch:
+    uris: http://${ELASTIC_HOST}:${ELASTIC_PORT}
+
 jwt:
   secret: ${JWT_SECRET}
 
@@ -38,3 +46,9 @@ cloud:
     credentials:
       access-key: ${AWS_ACCESS_KEY}
       secret-key: ${AWS_SECRET_KEY}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
