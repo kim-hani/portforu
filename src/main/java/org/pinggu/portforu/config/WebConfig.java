@@ -22,6 +22,7 @@ public class WebConfig {
         CorsConfiguration apiConfig = new CorsConfiguration();
         apiConfig.addAllowedOrigin("http://localhost:3000");
         apiConfig.addAllowedOrigin("https://api.portforu.online");
+        apiConfig.addAllowedOrigin("https://pinggu.vercel.app");
         apiConfig.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         apiConfig.addAllowedHeader("*");
         apiConfig.addExposedHeader("Authorization");
