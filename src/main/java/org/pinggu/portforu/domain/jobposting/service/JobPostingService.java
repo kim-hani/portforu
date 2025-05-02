@@ -1,10 +1,12 @@
 package org.pinggu.portforu.domain.jobposting.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.pinggu.portforu.common.domain.Pagecond;
 import org.pinggu.portforu.domain.jobposting.dto.request.JobPostingSaveRequestDto;
 import org.pinggu.portforu.domain.jobposting.dto.request.JobPostingUpdateRequestDto;
 import org.pinggu.portforu.domain.jobposting.dto.response.JobPostingResponseDto;
+import org.pinggu.portforu.domain.jobposting.elastic.service.JobPostingSearchService;
 import org.pinggu.portforu.domain.jobposting.entity.JobPosting;
 import org.pinggu.portforu.domain.jobposting.repository.JobPostingRepository;
 import org.springframework.data.domain.Page;
@@ -14,15 +16,18 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class JobPostingService {
 
     private final JobPostingFinder jobPostingFinder;
     private final JobPostingRepository jobPostingRepository;
+    private final JobPostingSearchService jobPostingSearchService;
 
     @Transactional
     public JobPostingResponseDto saveJobPosting(JobPostingSaveRequestDto requestDto) {
+        System.out.println("저장되고있습니다");
         JobPosting jobPosting = JobPosting.builder()
                 .title(requestDto.getTitle())
                 .company(requestDto.getCompany())
@@ -41,8 +46,9 @@ public class JobPostingService {
                 .skills(requestDto.getSkills())
                 .build();
 
-        if(jobPostingRepository.findByLink(jobPosting.getLink()).isEmpty()) {
+        if (jobPostingRepository.findByLink(jobPosting.getLink()).isEmpty()) {
             jobPostingRepository.save(jobPosting);
+            jobPostingSearchService.index(jobPosting);
         }
 
         return JobPostingResponseDto.from(jobPosting);
@@ -59,7 +65,6 @@ public class JobPostingService {
     @Transactional(readOnly = true)
     public JobPostingResponseDto findJobPosting(Long jobPostingId) {
         JobPosting jobPosting = jobPostingFinder.findJobPostingById(jobPostingId);
-
         return JobPostingResponseDto.from(jobPosting);
     }
 
@@ -72,15 +77,15 @@ public class JobPostingService {
                 requestDto.getEducationLevel(), requestDto.getExperienceYears(), requestDto.getKeyAbilities(),
                 requestDto.getMinExperienceYears(), requestDto.getMaxExperienceYears(),
                 requestDto.getClosingDate(), requestDto.getSkills());
+
+        jobPostingSearchService.index(jobPosting);
     }
 
     @Transactional
     public Long deleteJobPosting(Long jobPostingId) {
         JobPosting jobPosting = jobPostingFinder.findJobPostingById(jobPostingId);
-
         jobPostingRepository.delete(jobPosting);
-
+        jobPostingSearchService.deleteById(jobPosting.getId().toString());
         return jobPosting.getId();
     }
-
 }

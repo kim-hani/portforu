@@ -21,7 +21,7 @@ spring:
       port: ${REDIS_PORT}
 
   elasticsearch:
-    uris: https://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}
+    uris: http://${ELASTIC_HOST}:${ELASTIC_PORT}
 
 jwt:
   secret: ${JWT_SECRET}
@@ -46,3 +46,9 @@ cloud:
     credentials:
       access-key: ${AWS_ACCESS_KEY}
       secret-key: ${AWS_SECRET_KEY}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
