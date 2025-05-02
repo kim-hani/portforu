@@ -23,4 +23,14 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
                           @Param("membershipId") Long membershipId,
                           @Param("status") PaymentStatus status);
 
+    @Query("""
+    SELECT p FROM Payment p
+    WHERE p.status = :status
+    AND p.createdAt < :before
+    AND p.isDeleted = false
+        """)
+    List<Payment> findAllByStatusAndCreatedAtBefore(
+            @Param("status") PaymentStatus status,
+            @Param("before") Instant before
+    );
 }

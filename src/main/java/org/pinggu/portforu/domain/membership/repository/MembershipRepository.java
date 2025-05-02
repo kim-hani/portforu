@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface MembershipRepository extends JpaRepository<Membership, Long> {
 
-    @Query("SELECT m FROM Membership m WHERE m.isDeleted IS NULL")
+    @Query("SELECT m FROM Membership m WHERE m.isDeleted IS FALSE")
     List<Membership> findAllActiveMemberships();
 
 }

@@ -31,12 +31,7 @@ public interface SubscribeRepository extends JpaRepository<Subscribe, Long> {
     boolean hasValidSubscription(@Param("memberId") Long memberId,
                                  @Param("membershipId") Long membershipId);
 
-    @Modifying
-    @Query("UPDATE Subscribe s SET s.status = :toStatus " +
-            "WHERE s.status = :fromStatus AND s.endDate < :now AND s.isDeleted = false")
-    int bulkExpireSubscriptions(@Param("fromStatus") SubscribeStatus fromStatus,
-                                @Param("toStatus") SubscribeStatus toStatus,
-                                @Param("now") Instant now);
+    List<Subscribe> findAllByStatusAndEndDateBefore(SubscribeStatus status, Instant now);
 
-
+    long countByStatus(SubscribeStatus status);
 }
