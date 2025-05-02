@@ -66,13 +66,13 @@ public class PortfolioService {
         return portfolioPage.map(PortfolioListResponseDto::from);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PortfolioResponseDto findPortfolio(AuthMember authMember, Long portfolioId) {
         Portfolio portfolio = portfolioFinder.findPortfolioById(portfolioId);
 
         if (!portfolio.getMember().getId().equals(authMember.getId())) {
             if (!subscribeValidator.isSubscribed(authMember.getId())) {
-                Member viewer = Member.fromAuthMember(authMember);
+                Member viewer = memberFinder.findMemberById(authMember.getId());
 
                 if (viewer.getViewCount() <= 0) {
                     throw new CustomException(HttpStatus.FORBIDDEN, "포트폴리오 조회 가능 횟수를 모두 사용했습니다.");
