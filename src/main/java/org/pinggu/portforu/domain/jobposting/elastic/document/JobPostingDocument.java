@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Builder
 public class JobPostingDocument {
 
-    private String id;
+    private Long id;
     private String title;
     private String company;
     private String location;
@@ -35,7 +35,7 @@ public class JobPostingDocument {
 
     public static JobPostingDocument from(JobPosting jobPosting) {
         return JobPostingDocument.builder()
-                .id(String.valueOf(jobPosting.getId()))
+                .id(jobPosting.getId())
                 .title(jobPosting.getTitle())
                 .company(jobPosting.getCompany())
                 .location(jobPosting.getLocation())

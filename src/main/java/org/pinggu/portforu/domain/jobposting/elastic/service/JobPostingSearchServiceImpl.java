@@ -32,7 +32,7 @@ public class JobPostingSearchServiceImpl implements JobPostingSearchService {
         try {
             elasticsearchClient.index(i -> i
                     .index(INDEX_NAME)
-                    .id(document.getId())
+                    .id(String.valueOf(document.getId()))
                     .document(document)
             );
         } catch (IOException e) {
@@ -45,7 +45,7 @@ public class JobPostingSearchServiceImpl implements JobPostingSearchService {
         try {
             elasticsearchClient.delete(d -> d
                     .index(INDEX_NAME)
-                    .id(id)
+                    .id(String.valueOf(id))
             );
         } catch (IOException e) {
             log.error("Delete failed", e);
@@ -53,12 +53,16 @@ public class JobPostingSearchServiceImpl implements JobPostingSearchService {
     }
 
     @Override
-    public List<JobPostingDocument> search(String keyword) {
+    public List<JobPostingDocument> search(String keyword, int page, int size) {
         log.info("Elasticsearch 검색어: {}", keyword);
 
         try {
+            int from = page * size;
+
             SearchResponse<JobPostingDocument> response = elasticsearchClient.search(s -> s
                     .index(INDEX_NAME)
+                    .from(from)
+                    .size(size)
                     .query(q -> q
                             .bool(b -> b
                                     .should(s1 -> s1

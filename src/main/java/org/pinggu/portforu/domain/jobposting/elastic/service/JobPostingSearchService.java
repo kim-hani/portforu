@@ -8,5 +8,5 @@ import java.util.List;
 public interface JobPostingSearchService {
     void index(JobPosting jobPosting);
     void deleteById(String id);
-    List<JobPostingDocument> search(String keyword);
+    List<JobPostingDocument> search(String keyword, int page, int size);
 }
