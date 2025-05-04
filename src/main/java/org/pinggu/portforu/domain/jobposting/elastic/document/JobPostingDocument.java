@@ -1,19 +1,22 @@
 package org.pinggu.portforu.domain.jobposting.elastic.document;
 
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.pinggu.portforu.domain.jobposting.entity.JobPosting;
-import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
-@Document(indexName = "job_postings")
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class JobPostingDocument {
 
-    @Id
-    private String id;
-
+    private Long id;
     private String title;
     private String company;
     private String location;
@@ -28,11 +31,11 @@ public class JobPostingDocument {
     private Integer maxExperienceYears;
     private Instant hiringStartAt;
     private Instant hiringEndAt;
-    private String skills;
+    private List<String> skills;
 
     public static JobPostingDocument from(JobPosting jobPosting) {
         return JobPostingDocument.builder()
-                .id(String.valueOf(jobPosting.getId()))
+                .id(jobPosting.getId())
                 .title(jobPosting.getTitle())
                 .company(jobPosting.getCompany())
                 .location(jobPosting.getLocation())
@@ -47,7 +50,11 @@ public class JobPostingDocument {
                 .maxExperienceYears(jobPosting.getMaxExperienceYears())
                 .hiringStartAt(jobPosting.getHiringStartAt() != null ? jobPosting.getHiringStartAt().toInstant() : null)
                 .hiringEndAt(jobPosting.getHiringEndAt() != null ? jobPosting.getHiringEndAt().toInstant() : null)
-                .skills(jobPosting.getSkills())
+                .skills(Arrays.stream(jobPosting.getSkills().split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .collect(Collectors.toList()))
                 .build();
     }
+
 }
