@@ -26,11 +26,13 @@ public class MailSenderHelper {
             return;
         }
 
+        String actualEmail = resolveActualEmail(member);
+
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
 
-            helper.setTo(member.getEmail());
+            helper.setTo(actualEmail);
 
             // 외부에서 제목/본문 구성
             messageBuilder.accept(helper, member);
@@ -42,6 +44,22 @@ public class MailSenderHelper {
             log.error("이메일 발송 실패: to={}, error={}", member.getEmail(), e.getMessage(), e);
             slackNotifier.send("[메일 발송 실패]\n수신자: " + member.getEmail() + "\n오류: " + e.getMessage());
         }
+    }
+
+    // 소셜 로그인 유저는 언더바 기준으로 뒷부분만 추출
+    private String resolveActualEmail(Member member) {
+        String email = member.getEmail();
+
+        if (member.getProvider() == null) {
+            return email;
+        }
+
+        int underscore = email.indexOf("_");
+        if (underscore != -1 && underscore + 1 < email.length()) {
+            return email.substring(underscore + 1);
+        }
+
+        return email; // fallback
     }
 
     // Unsubscribe 링크 HTML 포맷
