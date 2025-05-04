@@ -66,12 +66,19 @@ dependencies {
     // OAuth2
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
+    // Mailing
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    // RabbitMQ
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
     // elasticsearch
     implementation 'co.elastic.clients:elasticsearch-java:8.12.1'
     implementation 'jakarta.json:jakarta.json-api:2.1.1'
     implementation 'org.glassfish:jakarta.json:2.0.1'
 
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
 }
 
 tasks.named('test') {

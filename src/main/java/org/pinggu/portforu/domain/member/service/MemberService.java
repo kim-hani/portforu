@@ -14,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -75,6 +77,17 @@ public class MemberService {
         memberRepository.delete(member);
 
         return member.getId();
+    }
+
+    @Transactional
+    public void updateEmailSubscription(AuthMember authMember, boolean isSubscribed) {
+        Member member = memberFinder.findMemberById(authMember.getId());
+        member.updateEmailSubscription(isSubscribed);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Member> findAllEmailSubscribedMembers() {
+        return memberRepository.findAllByIsEmailSubscribedTrue();
     }
 
 }

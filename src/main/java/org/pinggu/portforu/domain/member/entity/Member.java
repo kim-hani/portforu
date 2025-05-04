@@ -49,6 +49,12 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private Integer viewCount = 3;
 
+    @Column(nullable = false)
+    private Boolean isEmailSubscribed = true;
+
+    @Column(name = "unsubscribe_token", nullable = false, unique = true)
+    private String unsubscribeToken;
+
     @Builder
     public Member(String email, String password, String name, String phoneNumber, String address, UserRole userRole, String provider) {
         this.email = email;
@@ -58,6 +64,7 @@ public class Member extends BaseEntity {
         this.address = address;
         this.userRole = userRole;
         this.provider = provider;
+        this.unsubscribeToken = java.util.UUID.randomUUID().toString();
     }
 
     private Member(Long id, String email, String name, String phoneNumber, String address, UserRole userRole, String provider) {
@@ -97,4 +104,7 @@ public class Member extends BaseEntity {
         }
     }
 
+    public void updateEmailSubscription(boolean isSubscribed) {
+        this.isEmailSubscribed = isSubscribed;
+    }
 }

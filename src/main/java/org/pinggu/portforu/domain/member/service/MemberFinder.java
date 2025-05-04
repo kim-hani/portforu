@@ -25,4 +25,8 @@ public class MemberFinder {
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "존재하지 않는 회원정보입니다."));
     }
 
+    public Member findMemberByUnsubscribeToken(String token) {
+        return memberRepository.findByUnsubscribeToken(token)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "유효하지 않은 구독 해지 링크입니다."));
+    }
 }

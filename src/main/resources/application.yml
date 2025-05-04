@@ -20,6 +20,27 @@ spring:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
 
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+    listener:
+      simple:
+        message-converter: jackson2JsonMessageConverter
+
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
   elasticsearch:
     uris: http://${ELASTIC_HOST}:${ELASTIC_PORT}
 
