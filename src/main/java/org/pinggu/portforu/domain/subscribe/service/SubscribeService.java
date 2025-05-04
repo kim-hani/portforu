@@ -13,6 +13,7 @@ import org.pinggu.portforu.domain.payment.entity.Payment;
 import org.pinggu.portforu.domain.payment.enums.PaymentStatus;
 import org.pinggu.portforu.domain.payment.repository.PaymentRepository;
 import org.pinggu.portforu.domain.payment.scheduler.PaymentExpireScheduler;
+import org.pinggu.portforu.domain.payment.service.PaymentExpireService;
 import org.pinggu.portforu.domain.payment.service.PaymentFinder;
 import org.pinggu.portforu.domain.subscribe.dto.response.SubscribeResponseDto;
 import org.pinggu.portforu.domain.subscribe.entity.Subscribe;
@@ -39,18 +40,21 @@ public class SubscribeService {
     private final PaymentRepository paymentRepository;
     private final PaymentExpireScheduler paymentExpireScheduler;
     private final RedisLockExecutor redisLockExecutor;
+    private final PaymentExpireService paymentExpireService;
 
-    // 구독 생성
     @Transactional
     public SubscribeResponseDto saveSubscribe(AuthMember authMember, Long membershipId) {
         Member member = Member.fromAuthMember(authMember);
         Membership membership = membershipFinder.findById(membershipId);
 
+        subscribeRepository.findLatestByMemberAndMembership(member.getId(), membershipId)
+                .ifPresent(subscribe -> paymentExpireService.expireIfPending(subscribe.getId()));
+
         paymentFinder.existsPendingPayment(member, membershipId, PaymentStatus.PENDING);
         subscribeFinder.hasValidSubscription(member, membershipId);
 
         String lockKey = "lock:membership:" + membershipId;
-        SubscribeResponseDto[] response = new SubscribeResponseDto[1]; // 결과를 담기 위한 배열
+        SubscribeResponseDto[] response = new SubscribeResponseDto[1];
 
         redisLockExecutor.executeWithLock(lockKey, 5, 3, () -> {
             if (membership.getQuantity() <= 0) {

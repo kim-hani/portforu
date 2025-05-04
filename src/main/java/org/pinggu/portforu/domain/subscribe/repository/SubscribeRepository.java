@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SubscribeRepository extends JpaRepository<Subscribe, Long> {
@@ -41,5 +42,14 @@ public interface SubscribeRepository extends JpaRepository<Subscribe, Long> {
     List<Subscribe> findAllByStatusAndEndDateBefore(SubscribeStatus status, Instant now);
 
     long countByStatus(SubscribeStatus status);
+
+    @Query("""
+        SELECT s FROM Subscribe s
+        WHERE s.member.id = :memberId AND s.membership.id = :membershipId
+        ORDER BY s.id DESC
+        LIMIT 1
+    """)
+    Optional<Subscribe> findLatestByMemberAndMembership(@Param("memberId") Long memberId,
+                                                        @Param("membershipId") Long membershipId);
 
 }
