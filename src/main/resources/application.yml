@@ -84,3 +84,7 @@ management:
     metrics:
       export:
         enabled: true
+
+slack:
+  webhook:
+    url: ${SLACK_WEBHOOK_URL}
