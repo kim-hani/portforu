@@ -2,6 +2,7 @@ package org.pinggu.portforu.domain.jobposting.elastic.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.SortOrder;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
@@ -12,6 +13,7 @@ import org.pinggu.portforu.domain.jobposting.entity.JobPosting;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -59,34 +61,35 @@ public class JobPostingSearchServiceImpl implements JobPostingSearchService {
         try {
             int from = page * size;
 
+            // 입력 키워드를 소문자로 변환하고, 공백 기준으로 나눔
+            String[] terms = keyword.toLowerCase().split("\\s+");
+
+            // 각 단어마다 multi_match 쿼리를 만들어 must 조건으로 추가
             SearchResponse<JobPostingDocument> response = elasticsearchClient.search(s -> s
-                    .index(INDEX_NAME)
-                    .from(from)
-                    .size(size)
-                    .query(q -> q
-                            .bool(b -> b
-                                    .should(s1 -> s1
-                                            .multiMatch(m -> m
-                                                    .query(keyword)
-                                                    .fields("title", "company", "location", "salary", "duty",
-                                                            "employmentType", "experienceYears", "keyAbilities")
-                                                    .type(TextQueryType.PhrasePrefix)
-                                            )
-                                    )
-                                    .should(s2 -> s2
-                                            .term(t -> t
-                                                    .field("skills")
-                                                    .value(keyword)
+                            .index(INDEX_NAME)
+                            .from(from)
+                            .size(size)
+                            .query(q -> q
+                                    .bool(b -> b
+                                            .must(Arrays.stream(terms)
+                                                    .map(term -> Query.of(mq -> mq
+                                                            .multiMatch(m -> m
+                                                                    .query(term)
+                                                                    .fields("title", "company", "location", "salary", "duty",
+                                                                            "employmentType", "experienceYears", "keyAbilities", "skills")
+                                                                    .type(TextQueryType.PhrasePrefix)
+                                                            )
+                                                    ))
+                                                    .collect(Collectors.toList())
                                             )
                                     )
                             )
-                    )
-                    .sort(sort -> sort
-                            .field(f -> f
-                                    .field("id")
-                                    .order(SortOrder.Desc)
-                            )
-                    ),
+                            .sort(sort -> sort
+                                    .field(f -> f
+                                            .field("id")
+                                            .order(SortOrder.Desc)
+                                    )
+                            ),
                     JobPostingDocument.class
             );
 
