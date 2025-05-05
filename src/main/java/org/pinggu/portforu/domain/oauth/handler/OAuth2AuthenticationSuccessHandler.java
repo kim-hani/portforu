@@ -1,6 +1,6 @@
 package org.pinggu.portforu.domain.oauth.handler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,23 +14,22 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtUtil jwtUtil;
-    private final ObjectMapper objectMapper;
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
+
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         Member member = oAuth2User.getMember();
 
+        //  토큰 생성
         String accessToken = jwtUtil.createToken(
                 member.getId(),
                 member.getEmail(),
@@ -51,7 +50,9 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
                 member.getProvider()
         );
 
-        refreshTokenRepository.findById(member.getId()).ifPresentOrElse(existing -> existing.updateToken(refreshToken),
+        //  RefreshToken 저장
+        refreshTokenRepository.findById(member.getId()).ifPresentOrElse(
+                existing -> existing.updateToken(refreshToken),
                 () -> refreshTokenRepository.save(
                         RefreshToken.builder()
                                 .memberId(member.getId())
@@ -60,16 +61,23 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
                 )
         );
 
-        // 응답 설정
-        response.setContentType("application/json;charset=UTF-8");
-        response.setStatus(HttpServletResponse.SC_OK);
+        //  쿠키 설정
+        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setHttpOnly(true);
+        accessTokenCookie.setMaxAge(60 * 60); // 1시간
 
-        Map<String, String> tokenResponse = new HashMap<>();
-        tokenResponse.put("accessToken", accessToken);
-        tokenResponse.put("refreshToken", refreshToken);
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60); // 7일
 
-        String result = objectMapper.writeValueAsString(tokenResponse);
-        response.getWriter().write(result);
+        //  응답에 쿠키 추가
+        response.addCookie(accessTokenCookie);
+        response.addCookie(refreshTokenCookie);
+
+        //  리다이렉트
+        response.sendRedirect("https://pinggu.vercel.app/mainpage");
     }
-
 }
+
