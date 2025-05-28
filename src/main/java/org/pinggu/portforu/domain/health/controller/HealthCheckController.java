@@ -12,6 +12,4 @@ public class HealthCheckController {
         return "OK";    // 200OK 받으면 서버 살아있음
     }
 
-
-
 }

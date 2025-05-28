@@ -1,90 +1,90 @@
-spring:
-  application:
-    name: portforu
-
-  datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-
-  data:
-    redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
-
-  rabbitmq:
-    host: ${RABBITMQ_HOST}
-    port: ${RABBITMQ_PORT}
-    username: ${RABBITMQ_USERNAME}
-    password: ${RABBITMQ_PASSWORD}
-    listener:
-      simple:
-        message-converter: jackson2JsonMessageConverter
-
-  mail:
-    host: ${MAIL_HOST}
-    port: ${MAIL_PORT}
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-
-  elasticsearch:
-    uris: http://${ELASTIC_HOST}:${ELASTIC_PORT}
-
-jwt:
-  secret: ${JWT_SECRET}
-
-logging:
-  level:
-    org.hibernate.SQL: debug
-    org.springframework.security: debug
-
-toss:
-  test-client-key: ${TOSS_TEST_CLIENT_KEY}
-  test-secret-key: ${TOSS_TEST_SECRET_KEY}
-  success-url: ${TOSS_SUCCESS_URL}
-  fail-url: ${TOSS_FAIL_URL}
-
-cloud:
-  aws:
-    s3:
-      bucket: ${S3_BUCKET}
-    region:
-      static: ap-northeast-2
-    credentials:
-      access-key: ${AWS_ACCESS_KEY}
-      secret-key: ${AWS_SECRET_KEY}
-
-springdoc:
-  api-docs:
-    path: /v3/api-docs
-  swagger-ui:
-    path: /swagger-ui.html
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: prometheus
-
-  prometheus:
-    metrics:
-      export:
-        enabled: true
-
-slack:
-  webhook:
-    url: ${SLACK_WEBHOOK_URL}
+#spring:
+#  application:
+#    name: portforu
+#
+#  datasource:
+#    url: ${SPRING_DATASOURCE_URL}
+#    username: ${SPRING_DATASOURCE_USERNAME}
+#    password: ${SPRING_DATASOURCE_PASSWORD}
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    properties:
+#      hibernate:
+#        format_sql: true
+#
+#  data:
+#    redis:
+#      host: ${REDIS_HOST}
+#      port: ${REDIS_PORT}
+#
+#  rabbitmq:
+#    host: ${RABBITMQ_HOST}
+#    port: ${RABBITMQ_PORT}
+#    username: ${RABBITMQ_USERNAME}
+#    password: ${RABBITMQ_PASSWORD}
+#    listener:
+#      simple:
+#        message-converter: jackson2JsonMessageConverter
+#
+#  mail:
+#    host: ${MAIL_HOST}
+#    port: ${MAIL_PORT}
+#    username: ${MAIL_USERNAME}
+#    password: ${MAIL_PASSWORD}
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
+#
+#  elasticsearch:
+#    uris: http://${ELASTIC_HOST}:${ELASTIC_PORT}
+#
+#jwt:
+#  secret: ${JWT_SECRET}
+#
+#logging:
+#  level:
+#    org.hibernate.SQL: debug
+#    org.springframework.security: debug
+#
+#toss:
+#  test-client-key: ${TOSS_TEST_CLIENT_KEY}
+#  test-secret-key: ${TOSS_TEST_SECRET_KEY}
+#  success-url: ${TOSS_SUCCESS_URL}
+#  fail-url: ${TOSS_FAIL_URL}
+#
+#cloud:
+#  aws:
+#    s3:
+#      bucket: ${S3_BUCKET}
+#    region:
+#      static: ap-northeast-2
+#    credentials:
+#      access-key: ${AWS_ACCESS_KEY}
+#      secret-key: ${AWS_SECRET_KEY}
+#
+#springdoc:
+#  api-docs:
+#    path: /v3/api-docs
+#  swagger-ui:
+#    path: /swagger-ui.html
+#
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: prometheus
+#
+#  prometheus:
+#    metrics:
+#      export:
+#        enabled: true
+#
+#slack:
+#  webhook:
+#    url: ${SLACK_WEBHOOK_URL}

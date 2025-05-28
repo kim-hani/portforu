@@ -4,20 +4,23 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.pinggu.portforu.domain.member.entity.Member;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
 import java.util.function.BiConsumer;
 
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class MailSenderHelper {
 
+    @Autowired(required = false)
     private final JavaMailSender mailSender;
-    private final SlackNotifier slackNotifier;
+
+    @Autowired(required = false)
+    private SlackNotifier slackNotifier;
 
     // HTML 메일용
     public void sendIfSubscribed(Member member, BiConsumer<MimeMessageHelper, Member> messageBuilder) {
