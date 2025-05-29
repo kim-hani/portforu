@@ -79,6 +79,9 @@ dependencies {
 
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
+    // sms
+    implementation 'net.nurigo:sdk:4.3.0'
+
 }
 
 tasks.named('test') {

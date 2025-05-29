@@ -1,4 +1,4 @@
-package org.pinggu.portforu.config;
+package org.pinggu.portforu.config.swagger;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -9,6 +9,7 @@ import org.pinggu.portforu.domain.auth.dto.response.SignUpResponseDto;
 import org.pinggu.portforu.domain.auth.dto.request.SignInRequestDto;
 import org.pinggu.portforu.domain.auth.dto.request.SignUpRequestDto;
 import org.pinggu.portforu.domain.auth.repository.RefreshTokenRepository;
+import org.pinggu.portforu.domain.auth.verify.PhoneVerification;
 import org.pinggu.portforu.domain.member.entity.Member;
 import org.pinggu.portforu.domain.member.enums.UserRole;
 import org.pinggu.portforu.domain.member.repository.MemberRepository;
@@ -25,13 +26,19 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final PhoneVerification phoneVerification;
 
     @Transactional
     public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
         String normalizedEmail = requestDto.getEmail().toLowerCase();
+        String phoneNumber = requestDto.getPhoneNumber();
 
         if (memberRepository.existsByEmail(normalizedEmail)) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다.");
+        }
+
+        if(!phoneVerification.isVerified(phoneNumber)){
+            throw new CustomException(HttpStatus.BAD_REQUEST,"전화번호 인증이 완료되지 않았습니다");
         }
 
         Member newMember = Member.builder()
